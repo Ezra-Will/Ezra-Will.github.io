@@ -1,0 +1,73 @@
+ENGR 3530 - Project Phase 2: 2-Way Active Speaker Design
+Project Goal: 2-Way High-Fidelity Speaker with Active Crossover (5kHz)
+
+--- SYSTEM ARCHITECTURE ---
+Input: 3.5mm Aux Jack (Stereo-to-Mono Summing)
+Volume Control: 10k Dual-Gang Potentiometer
+Crossover Type: Active RC (Pre-Amplifier Stage)
+Power Amplification: 2x TDA2030A (14W Class-AB)
+Power Supply: 14.8V Lithium-Ion Battery (4S Pack)
+Charger: McMaster-Carr 2244N11 (Smart Charger)
+
+--- SPEAKERS ---
+Woofer: Peerless by Tymphany TC9FD18-08 (8 Ohm, 30W Max)
+Tweeter: Visaton SC 5 - 8 Ohm (8 Ohm, 60W Max with Crossover)
+
+--- CROSSOVER DESIGN (Target fc = 5000 Hz) ---
+The crossover point is set to 5kHz to optimize the overlap between the TC9 (woofer) 
+and the SC 5 (tweeter) while protecting the tweeter from low frequencies.
+
+Formula: fc = 1 / (2 * pi * R * C)
+
+1. LOW-PASS FILTER (LPF) - For the Woofer Path
+   Target: 5000 Hz
+   Selected Resistor (R): 1 kOhm (1000 Ohms)
+   Calculation for C:
+   C = 1 / (2 * pi * 1000 * 5000)
+   C = 3.183 * 10^-8 Farads
+   C = 31.8 nF
+   NEAREST STANDARD VALUE: 33 nF (0.033 uF)
+
+2. HIGH-PASS FILTER (HPF) - For the Tweeter Path
+   Target: 5000 Hz
+   Selected Resistor (R): 10 kOhm (10000 Ohms)
+   Calculation for C:
+   C = 1 / (2 * pi * 10000 * 5000)
+   C = 3.183 * 10^-9 Farads
+   C = 3.18 nF
+   NEAREST STANDARD VALUE: 3.3 nF (0.0033 uF)
+
+--- TEXT-BASED CIRCUIT LAYOUT ---
+
+[AUX JACK] --(L/R Summing)--> [VOLUME POT (10k)]
+                                     |
+             +-----------------------+-----------------------+
+             |                                               |
+      [LOW-PASS FILTER]                               [HIGH-PASS FILTER]
+      (1k Resistor in series,                         (3.3nF Cap in series,
+       33nF Cap to Ground)                             10k Resistor to Ground)
+             |                                               |
+      [TDA2030A AMP #1]                               [TDA2030A AMP #2]
+      (Gain set to ~20V/V)                            (Gain set to ~20V/V)
+             |                                               |
+      [PEERLESS WOOFER]                               [VISATON TWEETER]
+
+--- SIMULATION TIPS FOR MULTISIM ---
+1. AC SWEEP: Use two probes. Ensure crossover (intersection) is at 5kHz.
+2. TRANSIENT: Test with 100Hz (Woofer only) and 10kHz (Tweeter only) signals.
+3. POWER: Measure current draw from the 14.8V source at max volume.
+4. SPEAKER MODEL: In Multisim, use the "Speaker" component or an RLC circuit (8 Ohm resistor + 100uH inductor).
+
+--- COMPONENT LIST FOR ORDERING ---
+- 1x McMaster-Carr 2244N14 (14.8V Li-ion Battery Pack)
+- 1x McMaster-Carr 2244N11 (Charger)
+- 1x Peerless TC9FD18-08 (Woofer)
+- 1x Visaton SC 5 - 8 Ohm (Tweeter)
+- 2x TDA2030A Audio Amplifier ICs
+- 1x 10k Dual-Gang Potentiometer
+- 2x 1k Ohm Resistors (for LPF and input)
+- 2x 10k Ohm Resistors (for HPF and feedback)
+- 1x 33nF Ceramic/Film Capacitor (LPF)
+- 1x 3.3nF Ceramic/Film Capacitor (HPF)
+- 1x 3.5mm Aux Socket (Panel Mount)
+- Various decoupling capacitors (100uF, 0.1uF) as per TDA2030A datasheet.

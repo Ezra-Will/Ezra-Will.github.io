@@ -1,0 +1,73 @@
+// PROJECT: Dancer Arm Tension Control - VERSION 2.1 (Advanced Features)
+// Notable Changes: 
+// 1. Switched to Reverse Action (D511.0) for Unwinder hardware.
+// 2. Added Master Speed Cycle (Toggles 1k -> 2k -> 3k Hz).
+
+// --- 1. INITIALIZATION ---
+IF init_config THEN
+	D500 := 425;		// Setpoint (mm)
+	D510 := 100;		// Sampling Time (100ms)
+	D511 := 0;
+	D511.5 := TRUE;		// Enable Limits
+	
+	// FIX: Set to TRUE (Reverse Action) because Slave is an Unwinder
+	// If Depth Increases -> Decrease Unwind Speed
+	D511.0 := TRUE;	    
+	
+	D512 := 0;
+	
+	// PID Gains
+	D513 := 200;		
+	D514 := 800;		
+	D515 := 100;		
+	
+	// Output Limits
+	D532 := 4000;		
+	D533 := 0;			
+	
+	D1000 := 1000;		// Starting Master Speed
+    Speed_State := 0;   // Reset cycle state
+END_IF;
+
+// --- 2. MASTER SPEED TOGGLER ---
+// Cycles through speeds every 5 seconds (500 * 10ms = 5s)
+// Using T0 as the high-speed timer coil (Lecture 7 Disturbance Rejection)
+OUTH(start AND NOT T0, T0, 500);
+
+IF T0 THEN
+    CASE Speed_State OF
+        0: D1000 := 2000; Speed_State := 1;
+        1: D1000 := 3000; Speed_State := 2;
+        2: D1000 := 1000; Speed_State := 0;
+    END_CASE;
+END_IF;
+
+// --- 3. INPUT PROCESSING ---
+INT2FLT(TRUE, SD6020, FLT_SD6020);
+Scaled_SD6020 := (FLT_SD6020 * 0.0875) + 250.0;
+FLT2INT(TRUE, Scaled_SD6020, INT_SD6020);
+D502 := INT_SD6020;	
+
+// --- 4. PID EXECUTION ---
+PID(start, D500, D502, D510, D700);
+
+// --- 5. MOTOR SPEED CALCULATION ---
+IF start THEN
+    // Total Slave Speed is the PID Output
+    D1010 := D700;	
+ELSE
+    D1010 := 0;
+    D700  := 0; 
+END_IF;
+
+// --- 6. DRIVE MOTORS (PLSY & Direction) ---
+Y2 := Reverse; 
+Y3 := Reverse;
+
+IF NOT Reverse THEN
+    PLSY(start, D1000, 0, Y0); 
+    PLSY(start, D1010, 0, Y1);
+ELSE
+    PLSY(start, D1010, 0, Y0); 
+    PLSY(start, D1000, 0, Y1);
+END_IF;

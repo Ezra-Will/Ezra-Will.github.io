@@ -1,0 +1,680 @@
+IF I_AutoMode AND I_SafetyRelay AND (E_MachineError = 0) THEN
+	AutoMode := TRUE;
+
+	//---------- System Timer ------------------------------------
+	IF HMI_BypassConveyor THEN
+		OUTH(NOT VisionScanTimer.S, VisionScanTimer, ScanInterval);
+		ELSE
+		OUTH(ConveyorRun_Auto AND NOT VisionScanTimer.S, VisionScanTimer, ScanInterval);
+	END_IF;
+
+	IF VisionScanTimer.S THEN
+		AutoTriggerCamera := TRUE;
+		StartJobTimer := TRUE;
+		VisionScanTimer.N := 0;
+		VisionScanTimer.S := 0;
+	END_IF;
+	OUTH(StartJobTimer, VisionJobTimeCount, VisionExpectedJobTime);
+	IF VisionJobTimeCount.S THEN
+		StartJobTimer := FALSE;
+		VisionFrameID := VisionFrameID + 1;
+		VisionJobTimeCount.N := 0;
+		VisionJobTimeCount.S := 0;
+	END_IF;
+
+	CASE RobotState OF
+
+		0:
+		RobotState := 1;
+
+		//------- 1. Home Robot ----------------------------------------------------
+		1:
+		HomeRobot_Auto := TRUE;
+		HMI_HighSpeedAck := FALSE;
+		HMI_SlowSpeedAck := TRUE;
+		AutoMode := TRUE;
+		Homing_TurnOffElectromagnet := TRUE;
+		RobotState := 2;
+
+		//------- 2. Sync Tracker -------------------------------
+		2:
+		IF RobotHasHomed THEN
+			HomeRobot_Auto := FALSE;
+			HMI_HighSpeedAck := TRUE;
+			HMI_SlowSpeedAck := FALSE;
+			IF HMI_BypassConveyor THEN
+				ConveyorRun_Auto := FALSE;
+				ELSE
+				ConveyorRun_Auto := TRUE;
+			END_IF;
+
+			// Initialize Tracker to 30 deg Home (26667 steps)
+			Prev_Motor0_Steps := 26667;
+			Prev_Motor1_Steps := 26667;
+			Prev_Motor2_Steps := 26667;
+
+			RobotState := 10;	// Main Loop (Idle)
+		END_IF;
+
+		//------------- 10. Main Loop (Idle) ---------------------------------------------------------
+		10:
+		IF FrameCount > 4 THEN
+			ActiveFrame := FrameBuffer[ReadIdx];
+			ReadIdx := (ReadIdx + 1) MOD 6;
+			FrameCount := FrameCount - 1;
+
+			loopIndex := 0;
+			PartsTotal := ActiveFrame.PartsTotal;
+
+			RobotState := 30;	// Step-Thru Main Loop
+		END_IF;
+
+		//-------- 30. Step-Thru Main Loop ----------------------------------------
+		30:
+		IF loopIndex < PartsTotal THEN
+			RobotState := 40;	// Compute IK for "Safe Pick"
+			ELSE
+			RobotState := 10;	// Main Loop (Idle)
+		END_IF;
+
+		//------- 40. Compute IK for "Safe Pick" --------------------------------
+		40:
+
+		//IF loopIndex > 0 THEN
+			// Total Time = ((Full Intervals Passed) * ScanInterval) + Current Cycle Time
+			CurrentTCP.X_Position := ActiveFrame.CorrectedXPos[loopIndex] + (BeltSpeed_mm_s * (((VisionFrameID - 4) - ActiveFrame.FrameID) * ScanInterval + VisionScanTimer.N) / 100);
+			//ELSE
+			//CurrentTCP.X_Position := ActiveFrame.CorrectedXPos[loopIndex];
+		//END_IF;
+		
+		Inverse_Kinematics(
+		MyRobot := g_delta_robot,
+		x_0     := CurrentTCP.X_Position,
+		y_0     := ActiveFrame.CorrectedYPos[loopIndex],
+		z_0     := Z_Safe,
+		theta1  := th1, theta2  := th2, theta3  := th3
+		);
+
+		IF Inverse_Kinematics.InverseKinematics_Ok THEN
+			ATS0(angle_deg := 90.0 - th1, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS1(angle_deg := 90.0 - th2, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS2(angle_deg := 90.0 - th3, steps_per_rev := 6400.0, gear_ratio := 50.0);
+
+			Motor0_Steps := ATS0.AngleToSteps - Prev_Motor0_Steps;
+			Motor1_Steps := ATS1.AngleToSteps - Prev_Motor1_Steps;
+			Motor2_Steps := ATS2.AngleToSteps - Prev_Motor2_Steps;
+
+			Prev_Motor0_Steps := ATS0.AngleToSteps;
+			Prev_Motor1_Steps := ATS1.AngleToSteps;
+			Prev_Motor2_Steps := ATS2.AngleToSteps;
+
+			IF ActiveFrame.CorrectedYPos[loopIndex] > 115 OR ActiveFrame.CorrectedXPos[loopIndex] > 115 THEN
+				IKFault := TRUE;	// Error
+				ELSE
+				RobotState := 50;	// Move to "Safe Pick"
+			END_IF;
+			
+			ELSE
+			RobotState := 300;	// Error
+		END_IF;
+
+		//------- 50. Move to "Safe Pick" --------------------------------
+		50: // Trigger Move (Ramp Start)
+		StartPos0 := EIP_X_Motion.Motor0_CommandedPosition;
+		StartPos1 := EIP_X_Motion.Motor1_CommandedPosition;
+		StartPos2 := EIP_X_Motion.Motor2_CommandedPosition;
+
+		EIP_Y_Motion.Motor0_MoveDistance := Motor0_Steps;
+		EIP_Y_Motion.Motor1_MoveDistance := Motor1_Steps;
+		EIP_Y_Motion.Motor2_MoveDistance := Motor2_Steps;
+		EIP_Y_Motion.Motor0_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor1_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor2_LoadPositionMove := TRUE;
+		RobotState := 51;
+
+		51: // Wait Ack
+		IF EIP_X_Motion.Motor0_LoadPositionMoveAck AND EIP_X_Motion.Motor1_LoadPositionMoveAck AND EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			EIP_Y_Motion.Motor0_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor1_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor2_LoadPositionMove := FALSE;
+			RobotState := 52;
+		END_IF;
+
+		52: // Wait Ack Clear
+		IF NOT EIP_X_Motion.Motor0_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor1_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			RobotState := 53;
+		END_IF;
+
+		53: // Ramp Monitor (Blend to Pick)
+		DistTotal := ABS(Motor0_Steps) + ABS(Motor1_Steps) + ABS(Motor2_Steps);
+		DistDone  := ABS(EIP_X_Motion.Motor0_CommandedPosition - StartPos0) +
+		ABS(EIP_X_Motion.Motor1_CommandedPosition - StartPos1) +
+		ABS(EIP_X_Motion.Motor2_CommandedPosition - StartPos2);
+
+		IF (DistTotal > 0 AND (DistDone * 100 / DistTotal) >= RampPercent) OR DistTotal = 0 THEN
+			RobotState := 60;	// Compute IK for "Actual Pick"
+		END_IF;
+
+		//------- 60. Compute IK for "Actual Pick" --------------------------------
+		60:
+
+		//IF loopIndex > 0 THEN
+			CurrentTCP.X_Position := ActiveFrame.CorrectedXPos[loopIndex] + (BeltSpeed_mm_s * (((VisionFrameID - 4) - ActiveFrame.FrameID) * ScanInterval + VisionScanTimer.N) / 100);
+			//ELSE
+			//CurrentTCP.X_Position := ActiveFrame.CorrectedXPos[loopIndex];
+		//END_IF;
+		
+		Inverse_Kinematics(
+		MyRobot := g_delta_robot,
+		x_0     := CurrentTCP.X_Position,
+		y_0     := ActiveFrame.CorrectedYPos[loopIndex],
+		z_0     := Z_Pick,
+		theta1  := th1, theta2  := th2, theta3  := th3
+		);
+
+		IF Inverse_Kinematics.InverseKinematics_Ok THEN
+			ATS0(angle_deg := 90.0 - th1, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS1(angle_deg := 90.0 - th2, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS2(angle_deg := 90.0 - th3, steps_per_rev := 6400.0, gear_ratio := 50.0);
+
+			Motor0_Steps := ATS0.AngleToSteps - Prev_Motor0_Steps;
+			Motor1_Steps := ATS1.AngleToSteps - Prev_Motor1_Steps;
+			Motor2_Steps := ATS2.AngleToSteps - Prev_Motor2_Steps;
+
+			Prev_Motor0_Steps := ATS0.AngleToSteps;
+			Prev_Motor1_Steps := ATS1.AngleToSteps;
+			Prev_Motor2_Steps := ATS2.AngleToSteps;
+
+			RobotState := 70;	// Move to "Safe Pick"
+		
+			ELSE
+			RobotState := 300;
+		END_IF;
+
+		//------- 70. Move to "Actual Pick" --------------------------------
+		70: // Trigger Move
+		EIP_Y_Motion.Motor0_MoveDistance := Motor0_Steps;
+		EIP_Y_Motion.Motor1_MoveDistance := Motor1_Steps;
+		EIP_Y_Motion.Motor2_MoveDistance := Motor2_Steps;
+		EIP_Y_Motion.Motor0_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor1_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor2_LoadPositionMove := TRUE;
+		RobotState := 71;
+
+		71: // Wait Ack
+		IF EIP_X_Motion.Motor0_LoadPositionMoveAck AND EIP_X_Motion.Motor1_LoadPositionMoveAck AND EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			EIP_Y_Motion.Motor0_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor1_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor2_LoadPositionMove := FALSE;
+			RobotState := 72;
+		END_IF;
+
+		72: // Wait Ack Clear
+		IF NOT EIP_X_Motion.Motor0_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor1_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			RobotState := 73;
+		END_IF;
+
+		73: // Wait Completion (Full Stop for Pick)
+		IF NOT EIP_X_Motion.Motor0_StepsActive AND EIP_X_Motion.Motor0_AtTargetPosition AND EIP_X_Motion.Motor1_AtTargetPosition AND EIP_X_Motion.Motor2_AtTargetPosition THEN
+			RobotState := 80;	// Pick Part
+		END_IF;
+
+		//------- 80. Pick Part ----------------------------------------------
+		80:
+		PickComplete := TRUE;
+		TurnOnElectromagnet_Auto := TRUE;
+		// Latched Pick Coordinate
+		CurrentTCP.X_Position := ActiveFrame.CorrectedXPos[loopIndex] + (BeltSpeed_mm_s * (((VisionFrameID - 4) - ActiveFrame.FrameID) * ScanInterval + VisionScanTimer.N) / 100);
+		CurrentTCP.Y_Position := ActiveFrame.CorrectedYPos[loopIndex];
+		CurrentTCP.Z_Position := Z_Pick;
+		RobotState := 90;	// Compute IK for "Safe Lift"
+
+		//------- 90. Compute IK for "Safe Lift" --------------------------------
+		90:
+
+		CurrentTCP.X_Position := ActiveFrame.CorrectedXPos[loopIndex] + (BeltSpeed_mm_s * (((VisionFrameID - 4) - ActiveFrame.FrameID) * ScanInterval + VisionScanTimer.N) / 100);
+		
+		Inverse_Kinematics(
+		MyRobot := g_delta_robot,
+		x_0     := CurrentTCP.X_Position,
+		y_0     := ActiveFrame.CorrectedYPos[loopIndex],
+		z_0     := Z_Safe,
+		theta1  := th1, theta2  := th2, theta3  := th3
+		);
+
+		IF Inverse_Kinematics.InverseKinematics_Ok THEN
+			ATS0(angle_deg := 90.0 - th1, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS1(angle_deg := 90.0 - th2, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS2(angle_deg := 90.0 - th3, steps_per_rev := 6400.0, gear_ratio := 50.0);
+
+			Motor0_Steps := ATS0.AngleToSteps - Prev_Motor0_Steps;
+			Motor1_Steps := ATS1.AngleToSteps - Prev_Motor1_Steps;
+			Motor2_Steps := ATS2.AngleToSteps - Prev_Motor2_Steps;
+
+			Prev_Motor0_Steps := ATS0.AngleToSteps;
+			Prev_Motor1_Steps := ATS1.AngleToSteps;
+			Prev_Motor2_Steps := ATS2.AngleToSteps;
+
+			RobotState := 100;	// Move to "Safe Lift"
+			ELSE
+			RobotState := 300;
+		END_IF;
+
+		//------- 100. Move to "Safe Lift" --------------------------------
+		100: // Trigger Move (Ramp Start)
+		StartPos0 := EIP_X_Motion.Motor0_CommandedPosition;
+		StartPos1 := EIP_X_Motion.Motor1_CommandedPosition;
+		StartPos2 := EIP_X_Motion.Motor2_CommandedPosition;
+
+		EIP_Y_Motion.Motor0_MoveDistance := Motor0_Steps;
+		EIP_Y_Motion.Motor1_MoveDistance := Motor1_Steps;
+		EIP_Y_Motion.Motor2_MoveDistance := Motor2_Steps;
+		EIP_Y_Motion.Motor0_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor1_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor2_LoadPositionMove := TRUE;
+		RobotState := 101;
+
+		101: // Wait Ack
+		IF EIP_X_Motion.Motor0_LoadPositionMoveAck AND EIP_X_Motion.Motor1_LoadPositionMoveAck AND EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			EIP_Y_Motion.Motor0_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor1_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor2_LoadPositionMove := FALSE;
+			RobotState := 102;
+		END_IF;
+
+		102: // Wait Ack Clear
+		IF NOT EIP_X_Motion.Motor0_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor1_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			RobotState := 103;
+		END_IF;
+
+		103: // Ramp Monitor (Blend to Intermediate)
+		DistTotal := ABS(Motor0_Steps) + ABS(Motor1_Steps) + ABS(Motor2_Steps);
+		DistDone  := ABS(EIP_X_Motion.Motor0_CommandedPosition - StartPos0) +
+		ABS(EIP_X_Motion.Motor1_CommandedPosition - StartPos1) +
+		ABS(EIP_X_Motion.Motor2_CommandedPosition - StartPos2);
+
+		IF (DistTotal > 0 AND (DistDone * 100 / DistTotal) >= RampPercent) OR DistTotal = 0 THEN
+			RobotState := 110;	// Compute IK for Intermediate Waypoint
+		END_IF;
+
+		//------- 110. Compute IK for Intermediate Waypoint ---------------------------
+		110:
+		
+		CurrentTCP.X_Position := ActiveFrame.CorrectedXPos[loopIndex] + (BeltSpeed_mm_s * (((VisionFrameID - 4) - ActiveFrame.FrameID) * ScanInterval + VisionScanTimer.N) / 100);
+			
+			IF ActiveFrame.PartClass[loopIndex] = 1 THEN TargetX := 20.0; ELSE TargetX := -20.0; END_IF;
+			
+			Inverse_Kinematics(
+			MyRobot := g_delta_robot,
+			x_0     := (CurrentTCP.X_Position + TargetX) / 2.0,
+			y_0     := (ActiveFrame.CorrectedYPos[loopIndex] - 120.0) / 2.0,
+			z_0     := Z_Safe,
+			theta1  := th1, theta2  := th2, theta3  := th3
+			);
+
+		IF Inverse_Kinematics.InverseKinematics_Ok THEN
+			ATS0(angle_deg := 90.0 - th1, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS1(angle_deg := 90.0 - th2, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS2(angle_deg := 90.0 - th3, steps_per_rev := 6400.0, gear_ratio := 50.0);
+
+			Motor0_Steps := ATS0.AngleToSteps - Prev_Motor0_Steps;
+			Motor1_Steps := ATS1.AngleToSteps - Prev_Motor1_Steps;
+			Motor2_Steps := ATS2.AngleToSteps - Prev_Motor2_Steps;
+
+			Prev_Motor0_Steps := ATS0.AngleToSteps;
+			Prev_Motor1_Steps := ATS1.AngleToSteps;
+			Prev_Motor2_Steps := ATS2.AngleToSteps;
+
+			RobotState := 120;	// Move to Intermediate Waypoint
+			ELSE
+			RobotState := 300;
+		END_IF;
+
+		//------- 120. Move to Intermediate Waypoint --------------------------------
+		120: // Trigger Move (Ramp Start)
+		StartPos0 := EIP_X_Motion.Motor0_CommandedPosition;
+		StartPos1 := EIP_X_Motion.Motor1_CommandedPosition;
+		StartPos2 := EIP_X_Motion.Motor2_CommandedPosition;
+
+		EIP_Y_Motion.Motor0_MoveDistance := Motor0_Steps;
+		EIP_Y_Motion.Motor1_MoveDistance := Motor1_Steps;
+		EIP_Y_Motion.Motor2_MoveDistance := Motor2_Steps;
+		EIP_Y_Motion.Motor0_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor1_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor2_LoadPositionMove := TRUE;
+		RobotState := 121;
+
+		121: // Wait Ack
+		IF EIP_X_Motion.Motor0_LoadPositionMoveAck AND EIP_X_Motion.Motor1_LoadPositionMoveAck AND EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			EIP_Y_Motion.Motor0_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor1_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor2_LoadPositionMove := FALSE;
+			RobotState := 122;
+		END_IF;
+
+		122: // Wait Ack Clear
+		IF NOT EIP_X_Motion.Motor0_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor1_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			RobotState := 123;
+		END_IF;
+
+		123: // Ramp Monitor (Blend to Safe Drop)
+		DistTotal := ABS(Motor0_Steps) + ABS(Motor1_Steps) + ABS(Motor2_Steps);
+		DistDone  := ABS(EIP_X_Motion.Motor0_CommandedPosition - StartPos0) +
+		ABS(EIP_X_Motion.Motor1_CommandedPosition - StartPos1) +
+		ABS(EIP_X_Motion.Motor2_CommandedPosition - StartPos2);
+
+		IF (DistTotal > 0 AND (DistDone * 100 / DistTotal) >= RampPercent) OR DistTotal = 0 THEN
+			RobotState := 130;	// Compute IK for Safe DropOff
+		END_IF;
+
+		//------- 130. Compute IK for Safe DropOff --------------------------------
+		130:
+		PickComplete := FALSE;
+		
+		IF ActiveFrame.PartClass[loopIndex] = 1 THEN	// Scrap
+			Inverse_Kinematics(
+			MyRobot := g_delta_robot,
+			x_0     := 40.0,
+			y_0     := -120.0,
+			z_0     := Z_Safe,
+			theta1  := th1, theta2  := th2, theta3  := th3
+			);
+			ELSIF ActiveFrame.PartClass[loopIndex] = 2 THEN	// Rework
+			Inverse_Kinematics(
+			MyRobot := g_delta_robot,
+			x_0     := -40.0,
+			y_0     := -120.0,
+			z_0     := Z_Safe,
+			theta1  := th1, theta2  := th2, theta3  := th3
+			);
+			ELSE
+			RobotState := 300; // Error: Unknown Class
+		END_IF;
+		
+		IF Inverse_Kinematics.InverseKinematics_Ok AND RobotState = 130 THEN
+			ATS0(angle_deg := 90.0 - th1, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS1(angle_deg := 90.0 - th2, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS2(angle_deg := 90.0 - th3, steps_per_rev := 6400.0, gear_ratio := 50.0);
+
+			Motor0_Steps := ATS0.AngleToSteps - Prev_Motor0_Steps;
+			Motor1_Steps := ATS1.AngleToSteps - Prev_Motor1_Steps;
+			Motor2_Steps := ATS2.AngleToSteps - Prev_Motor2_Steps;
+
+			Prev_Motor0_Steps := ATS0.AngleToSteps;
+			Prev_Motor1_Steps := ATS1.AngleToSteps;
+			Prev_Motor2_Steps := ATS2.AngleToSteps;
+
+			RobotState := 140;	// Move to Safe DropOff
+			ELSE
+			RobotState := 300;
+		END_IF;
+
+		//------- 140. Move to Safe DropOff --------------------------------
+		140: // Trigger Move (Ramp Start)
+		StartPos0 := EIP_X_Motion.Motor0_CommandedPosition;
+		StartPos1 := EIP_X_Motion.Motor1_CommandedPosition;
+		StartPos2 := EIP_X_Motion.Motor2_CommandedPosition;
+
+		EIP_Y_Motion.Motor0_MoveDistance := Motor0_Steps;
+		EIP_Y_Motion.Motor1_MoveDistance := Motor1_Steps;
+		EIP_Y_Motion.Motor2_MoveDistance := Motor2_Steps;
+		EIP_Y_Motion.Motor0_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor1_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor2_LoadPositionMove := TRUE;
+		RobotState := 141;
+
+		141: // Wait Ack
+		IF EIP_X_Motion.Motor0_LoadPositionMoveAck AND EIP_X_Motion.Motor1_LoadPositionMoveAck AND EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			EIP_Y_Motion.Motor0_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor1_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor2_LoadPositionMove := FALSE;
+			RobotState := 142;
+		END_IF;
+
+		142: // Wait Ack Clear
+		IF NOT EIP_X_Motion.Motor0_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor1_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			RobotState := 143;
+		END_IF;
+
+		143: // Ramp Monitor (Blend to Drop)
+		DistTotal := ABS(Motor0_Steps) + ABS(Motor1_Steps) + ABS(Motor2_Steps);
+		DistDone  := ABS(EIP_X_Motion.Motor0_CommandedPosition - StartPos0) +
+		ABS(EIP_X_Motion.Motor1_CommandedPosition - StartPos1) +
+		ABS(EIP_X_Motion.Motor2_CommandedPosition - StartPos2);
+
+		IF (DistTotal > 0 AND (DistDone * 100 / DistTotal) >= RampPercent) OR DistTotal = 0 THEN
+			RobotState := 150;	// Compute IK for Actual DropOff
+		END_IF;
+
+		//------- 150. Compute IK for Actual DropOff --------------------------------
+		150:
+		IF ActiveFrame.PartClass[loopIndex] = 1 THEN	// Scrap
+			Inverse_Kinematics(
+			MyRobot := g_delta_robot,
+			x_0     := 40.0,
+			y_0     := -120.0,
+			z_0     := Z_Pick,
+			theta1  := th1, theta2  := th2, theta3  := th3
+			);
+			ELSIF ActiveFrame.PartClass[loopIndex] = 2 THEN	// Rework
+			Inverse_Kinematics(
+			MyRobot := g_delta_robot,
+			x_0     := -40.0,
+			y_0     := -120.0,
+			z_0     := Z_Pick,
+			theta1  := th1, theta2  := th2, theta3  := th3
+			);
+			ELSE
+			RobotState := 300;
+		END_IF;
+
+		IF Inverse_Kinematics.InverseKinematics_Ok AND RobotState = 150 THEN
+			ATS0(angle_deg := 90.0 - th1, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS1(angle_deg := 90.0 - th2, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS2(angle_deg := 90.0 - th3, steps_per_rev := 6400.0, gear_ratio := 50.0);
+
+			Motor0_Steps := ATS0.AngleToSteps - Prev_Motor0_Steps;
+			Motor1_Steps := ATS1.AngleToSteps - Prev_Motor1_Steps;
+			Motor2_Steps := ATS2.AngleToSteps - Prev_Motor2_Steps;
+
+			Prev_Motor0_Steps := ATS0.AngleToSteps;
+			Prev_Motor1_Steps := ATS1.AngleToSteps;
+			Prev_Motor2_Steps := ATS2.AngleToSteps;
+
+			RobotState := 160;	// Move to Actual DropOff
+			ELSE
+			RobotState := 300;
+		END_IF;
+
+		//------- 160. Move to Actual DropOff --------------------------------
+		160: // Trigger Move
+		EIP_Y_Motion.Motor0_MoveDistance := Motor0_Steps;
+		EIP_Y_Motion.Motor1_MoveDistance := Motor1_Steps;
+		EIP_Y_Motion.Motor2_MoveDistance := Motor2_Steps;
+		EIP_Y_Motion.Motor0_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor1_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor2_LoadPositionMove := TRUE;
+		RobotState := 161;
+
+		161: // Wait Ack
+		IF EIP_X_Motion.Motor0_LoadPositionMoveAck AND EIP_X_Motion.Motor1_LoadPositionMoveAck AND EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			EIP_Y_Motion.Motor0_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor1_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor2_LoadPositionMove := FALSE;
+			RobotState := 162;
+		END_IF;
+
+		162: // Wait Ack Clear
+		IF NOT EIP_X_Motion.Motor0_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor1_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			RobotState := 163;
+		END_IF;
+
+		163: // Wait Completion (Full Stop for Drop)
+		IF NOT EIP_X_Motion.Motor0_StepsActive AND EIP_X_Motion.Motor0_AtTargetPosition AND EIP_X_Motion.Motor1_AtTargetPosition AND EIP_X_Motion.Motor2_AtTargetPosition THEN
+			RobotState := 170; // Drop Part
+		END_IF;
+
+		//------- 170. Drop Part ----------------------------------------
+		170:
+		PlaceComplete := TRUE;
+		TurnOnElectromagnet_Auto := FALSE;
+		IF ActiveFrame.PartClass[loopIndex] = 1 THEN 
+			CurrentTCP.X_Position := 40.0; 
+			ELSE 
+			CurrentTCP.X_Position := -40.0; 
+		END_IF;
+		CurrentTCP.Y_Position := -120.0;
+		CurrentTCP.Z_Position := Z_Pick;
+		RobotState := 180;	// Compute IK for Safe DropOff Lift
+
+		//------- 180. Compute IK for Safe DropOff Lift --------------------------------
+		180:
+		IF ActiveFrame.PartClass[loopIndex] = 1 THEN	// Scrap
+			Inverse_Kinematics(
+			MyRobot := g_delta_robot,
+			x_0     := 40.0,
+			y_0     := -120.0,
+			z_0     := Z_Safe,
+			theta1  := th1, theta2  := th2, theta3  := th3
+			);
+			ELSIF ActiveFrame.PartClass[loopIndex] = 2 THEN	// Rework
+			Inverse_Kinematics(
+			MyRobot := g_delta_robot,
+			x_0     := -40.0,
+			y_0     := -120.0,
+			z_0     := Z_Safe,
+			theta1  := th1, theta2  := th2, theta3  := th3
+			);
+			ELSE
+			RobotState := 300;
+		END_IF;
+
+		IF Inverse_Kinematics.InverseKinematics_Ok AND RobotState = 180 THEN
+			ATS0(angle_deg := 90.0 - th1, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS1(angle_deg := 90.0 - th2, steps_per_rev := 6400.0, gear_ratio := 50.0);
+			ATS2(angle_deg := 90.0 - th3, steps_per_rev := 6400.0, gear_ratio := 50.0);
+
+			Motor0_Steps := ATS0.AngleToSteps - Prev_Motor0_Steps;
+			Motor1_Steps := ATS1.AngleToSteps - Prev_Motor1_Steps;
+			Motor2_Steps := ATS2.AngleToSteps - Prev_Motor2_Steps;
+
+			Prev_Motor0_Steps := ATS0.AngleToSteps;
+			Prev_Motor1_Steps := ATS1.AngleToSteps;
+			Prev_Motor2_Steps := ATS2.AngleToSteps;
+
+			RobotState := 190;	// Move to Safe DropOff Lift
+			ELSE
+			RobotState := 300;
+		END_IF;
+
+		//------- 190. Move to Safe DropOff Lift --------------------------------
+		190: // Trigger Move (Ramp Start)
+		StartPos0 := EIP_X_Motion.Motor0_CommandedPosition;
+		StartPos1 := EIP_X_Motion.Motor1_CommandedPosition;
+		StartPos2 := EIP_X_Motion.Motor2_CommandedPosition;
+
+		EIP_Y_Motion.Motor0_MoveDistance := Motor0_Steps;
+		EIP_Y_Motion.Motor1_MoveDistance := Motor1_Steps;
+		EIP_Y_Motion.Motor2_MoveDistance := Motor2_Steps;
+		EIP_Y_Motion.Motor0_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor1_LoadPositionMove := TRUE;
+		EIP_Y_Motion.Motor2_LoadPositionMove := TRUE;
+		RobotState := 191;
+
+		191: // Wait Ack
+		IF EIP_X_Motion.Motor0_LoadPositionMoveAck AND EIP_X_Motion.Motor1_LoadPositionMoveAck AND EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			EIP_Y_Motion.Motor0_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor1_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor2_LoadPositionMove := FALSE;
+			RobotState := 192;
+		END_IF;
+
+		192: // Wait Ack Clear
+		IF NOT EIP_X_Motion.Motor0_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor1_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			RobotState := 193;
+		END_IF;
+
+		193: // Ramp Monitor (Blend to Next)
+		DistTotal := ABS(Motor0_Steps) + ABS(Motor1_Steps) + ABS(Motor2_Steps);
+		DistDone  := ABS(EIP_X_Motion.Motor0_CommandedPosition - StartPos0) +
+		ABS(EIP_X_Motion.Motor1_CommandedPosition - StartPos1) +
+		ABS(EIP_X_Motion.Motor2_CommandedPosition - StartPos2);
+
+		IF (DistTotal > 0 AND (DistDone * 100 / DistTotal) >= RampPercent) OR DistTotal = 0 THEN
+			RobotState := 200;
+		END_IF;
+
+		//------- 200. Return Home / Next Part ----------------------------------------
+		200:
+		loopIndex := loopIndex + 1;
+		IF loopIndex >= PartsTotal THEN
+			// Frame Complete
+			RobotState := 210;  // Absolute Move Home
+			ELSE
+			RobotState := 220;
+		END_IF;
+
+		//------- 210. Home Correction (Absolute Move) ----------------------------------------
+		210:
+		// Wait for motors to be fully stopped before correction to prevent jumps
+		IF NOT EIP_X_Motion.Motor0_StepsActive AND EIP_X_Motion.Motor0_AtTargetPosition AND
+			NOT EIP_X_Motion.Motor1_StepsActive AND EIP_X_Motion.Motor1_AtTargetPosition AND
+			NOT EIP_X_Motion.Motor2_StepsActive AND EIP_X_Motion.Motor2_AtTargetPosition THEN
+
+			// Return to Home (26667 steps)
+			EIP_Y_Motion.Motor0_MoveDistance := 26667 - Prev_Motor0_Steps;
+			EIP_Y_Motion.Motor1_MoveDistance := 26667 - Prev_Motor1_Steps;
+			EIP_Y_Motion.Motor2_MoveDistance := 26667 - Prev_Motor2_Steps;
+
+			Prev_Motor0_Steps := 26667;
+			Prev_Motor1_Steps := 26667;
+			Prev_Motor2_Steps := 26667;
+
+			EIP_Y_Motion.Motor0_LoadPositionMove := TRUE;
+			EIP_Y_Motion.Motor1_LoadPositionMove := TRUE;
+			EIP_Y_Motion.Motor2_LoadPositionMove := TRUE;
+
+			MotionStarted := FALSE;
+			AllAtTarget := FALSE;
+			RobotState := 211;
+		END_IF;
+
+		211:
+		IF EIP_X_Motion.Motor0_LoadPositionMoveAck AND EIP_X_Motion.Motor1_LoadPositionMoveAck AND EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			EIP_Y_Motion.Motor0_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor1_LoadPositionMove := FALSE;
+			EIP_Y_Motion.Motor2_LoadPositionMove := FALSE;
+			RobotState := 212;
+		END_IF;
+
+		212:
+		IF NOT EIP_X_Motion.Motor0_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor1_LoadPositionMoveAck AND NOT EIP_X_Motion.Motor2_LoadPositionMoveAck THEN
+			MotionStarted := TRUE;
+			RobotState := 213;
+		END_IF;
+
+		213:
+		IF NOT EIP_X_Motion.Motor0_StepsActive AND EIP_X_Motion.Motor0_AtTargetPosition AND EIP_X_Motion.Motor1_AtTargetPosition AND EIP_X_Motion.Motor2_AtTargetPosition THEN
+			RobotState := 220;	// Check Completion
+		END_IF;
+
+		//------- 220. Check Completion ----------------------------------------
+		220:
+		IF loopIndex >= PartsTotal THEN
+			RobotState := 10;	// Main Loop (Idle)
+			ELSE
+			RobotState := 30;	// Step-Thru Main Loop
+		END_IF;
+
+	END_CASE;
+
+	ELSE
+	AutoMode := FALSE;
+	ConveyorRun_Auto := FALSE;
+	TurnOnElectromagnet_Auto := FALSE;
+	RobotState := 0;
+	VisionFrameID := 0;
+	WriteIdx := 0;
+	ReadIdx := 0;
+	FrameCount := 0;
+END_IF;

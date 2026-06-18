@@ -139,19 +139,19 @@ function openProject(id) {
         <div class="modal-gallery">
           <div class="img-compare-wrap">
             <p style="color:var(--text-muted);font-size:0.78rem;margin-bottom:4px;">BEFORE</p>
-            <img src="../Work/1_/8718Before.jpg"  alt="Enclosure 8718 Before" />
+            <img src="Work/1_/8718Before.jpg"  alt="Enclosure 8718 Before" />
           </div>
           <div class="img-compare-wrap">
             <p style="color:var(--accent-2);font-size:0.78rem;margin-bottom:4px;">AFTER</p>
-            <img src="../Work/1_/8718After.jpg"   alt="Enclosure 8718 After" />
+            <img src="Work/1_/8718After.jpg"   alt="Enclosure 8718 After" />
           </div>
           <div class="img-compare-wrap">
             <p style="color:var(--text-muted);font-size:0.78rem;margin-bottom:4px;">BEFORE</p>
-            <img src="../Work/1_/8720Before.jpg"  alt="Enclosure 8720 Before" />
+            <img src="Work/1_/8720Before.jpg"  alt="Enclosure 8720 Before" />
           </div>
           <div class="img-compare-wrap">
             <p style="color:var(--accent-2);font-size:0.78rem;margin-bottom:4px;">AFTER</p>
-            <img src="../Work/1_/8720AfterInstall.jpg" alt="Enclosure 8720 After" />
+            <img src="Work/1_/8720AfterInstall.jpg" alt="Enclosure 8720 After" />
           </div>
         </div>
       `
@@ -170,39 +170,41 @@ function openProject(id) {
             'IMG_2258','IMG_2259','IMG_2260','IMG_2264',
             'IMG_2265','IMG_2275','IMG_2276'
           ].map(n =>
-            `<img src="../Work/2_/${n}.JPG" alt="${n}" />`
+            `<img src="Work/3_/${n}.JPG" alt="${n}" />`
           ).join('')}
         </div>
       `
     },
 
     powder: {
-      title: 'Powder Coater — Control Panel',
+      title: 'Rolling Machine — Controls Package',
       subtitle: 'Work Experience · PLC · HMI · Wiring',
-      desc: `Full controls package for a powder coater system — encompassing PLC programming, HMI design, wiring schematic creation, 
-             and support documentation. Panels were built to spec with full traceability through organized documentation packages.`,
+      desc: `Controls documentation for a rolling machine build — encompassing PLC documentation, exported logic, wiring schematics,
+             and support files. The package gives future troubleshooting work a clear path from code to wiring to field I/O.`,
       html: () => `
-        <p class="modal-section-label">Wiring Overview (PDF)</p>
+        <p class="modal-section-label">PLC Documentation (PDF)</p>
         <div class="modal-pdf-wrap">
-          <iframe src="../Work/3_/NetworkArchitecture/OVERVIEW.pdf" title="Wiring Overview"></iframe>
+          <iframe src="Work/2_/01 PLC & HMI/Rolling_Machine_PLC_V1.01.pdf" title="Rolling Machine PLC Documentation"></iframe>
         </div>
-        <p class="modal-section-label">Network / Architecture Diagrams</p>
-        <div class="modal-gallery">
-          <img src="../Work/3_/NetworkArchitecture/network example.png" alt="Network Example Diagram" />
-        </div>
-        <p class="modal-section-label">Additional Schematic PDFs</p>
+        <p class="modal-section-label">Electrical Schematics</p>
         <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1.5rem;">
           ${[
-            ['OVERVIEW_A-B.pdf','Overview A-B'],
-            ['OVERVIEW_C-D.pdf','Overview C-D'],
-            ['OVERVIEW_LINEA.pdf','Line A'],
-            ['OVERVIEW_LINEB.pdf','Line B'],
-            ['OVERVIEW_LINEC.pdf','Line C'],
-            ['OVERVIEW_LINED.pdf','Line D'],
-            ['OVERVIEW_A-B_ROBOT_CELL.pdf','Robot Cell A-B'],
-            ['OVERVIEW_PALLET_CONV_ENCLOSURE.pdf','Pallet Conv Enclosure'],
+            ['02 Wiring Schematics/English Electrical Prints.pdf','Original Prints'],
+            ['02 Wiring Schematics/New Rolling Machine Electrical Prints.pdf','New Electrical Prints'],
+            ['02 Wiring Schematics/New Rolling Machine Electrical Prints_2.pdf','Revised Electrical Prints'],
+            ['02 Wiring Schematics/Rolling Machine w Transformer.pdf','Transformer Prints'],
           ].map(([file, label]) =>
-            `<a href="../Work/3_/NetworkArchitecture/${file}" target="_blank" class="btn btn-sm">📄 ${label}</a>`
+            `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">📄 ${label}</a>`
+          ).join('')}
+        </div>
+        <p class="modal-section-label">Code &amp; I/O References</p>
+        <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1.5rem;">
+          ${[
+            ['01 PLC & HMI/Exported_PLC_Logic/ProgPou.txt','Exported PLC Logic'],
+            ['01 PLC & HMI/Exported_PLC_Logic/ProgPou.html','PLC Logic HTML'],
+            ['03 Support Documents/Rolling_Machine_IOSheet.xlsx','I/O Sheet'],
+          ].map(([file, label]) =>
+            `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">📄 ${label}</a>`
           ).join('')}
         </div>
       `
@@ -217,12 +219,12 @@ function openProject(id) {
       html: () => `
         <p class="modal-section-label">Network Diagram</p>
         <div class="modal-gallery">
-          <img src="../Work/4_/NetworkArchitecture/network example.png" alt="Network Architecture Diagram"
+          <img src="Work/4_/NetworkArchitecture/network example.png" alt="Network Architecture Diagram"
                onerror="this.style.display='none'" />
         </div>
         <p class="modal-section-label">Architecture Overview (PDF)</p>
         <div class="modal-pdf-wrap">
-          <iframe src="../Work/4_/NetworkArchitecture/OVERVIEW.pdf" title="Network Architecture Overview"></iframe>
+          <iframe src="Work/4_/NetworkArchitecture/OVERVIEW.pdf" title="Network Architecture Overview"></iframe>
         </div>
         <p class="modal-section-label">Schematic Package</p>
         <div style="display:flex;flex-wrap:wrap;gap:0.6rem;">
@@ -232,7 +234,7 @@ function openProject(id) {
             ['OVERVIEW_C-D.pdf','Overview C-D'],
             ['combined.pdf','Full Combined PDF'],
           ].map(([file, label]) =>
-            `<a href="../Work/4_/NetworkArchitecture/${file}" target="_blank" class="btn btn-sm">📄 ${label}</a>`
+            `<a href="Work/4_/NetworkArchitecture/${file}" target="_blank" class="btn btn-sm">📄 ${label}</a>`
           ).join('')}
         </div>
       `
@@ -250,34 +252,28 @@ function openProject(id) {
         <p class="modal-section-label">Demo Videos</p>
         <div class="modal-video-wrap" style="margin-bottom:1rem;">
           <video controls preload="metadata">
-            <source src="../School/2_/Video1.MP4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-        <div class="modal-video-wrap">
-          <video controls preload="metadata">
-            <source src="../School/2_/Video2.mov" type="video/mp4" />
+            <source src="School/2_/Video1.MP4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
         <p class="modal-section-label" style="margin-top:1.5rem;">Machine Photos</p>
         <div class="modal-gallery">
-          <img src="../School/2_/Machine_FrontView1.JPG" alt="Machine Front View 1" />
-          <img src="../School/2_/Machine_FrontView2.JPG" alt="Machine Front View 2" />
-          <img src="../School/2_/Electrical_Enclosure.jpeg" alt="Electrical Enclosure" />
-          <img src="../School/2_/CAD_Final_S1.jpg" alt="CAD Final Design" />
-          <img src="../School/2_/IMG_2665.jpeg" alt="Build Photo" />
-          <img src="../School/2_/IMG_2670.jpeg" alt="Build Photo 2" />
+          <img src="School/2_/Machine_FrontView1.JPG" alt="Machine Front View 1" />
+          <img src="School/2_/Machine_FrontView2.JPG" alt="Machine Front View 2" />
+          <img src="School/2_/Electrical_Enclosure.jpeg" alt="Electrical Enclosure" />
+          <img src="School/2_/CAD_Final_S1.jpg" alt="CAD Final Design" />
+          <img src="School/2_/IMG_2665.jpeg" alt="Build Photo" />
+          <img src="School/2_/IMG_2670.jpeg" alt="Build Photo 2" />
         </div>
         <p class="modal-section-label">PLC Documentation</p>
         <div class="modal-pdf-wrap">
-          <iframe src="../School/2_/4580_PLC_V4.04.pdf" title="PLC Documentation"></iframe>
+          <iframe src="School/2_/4580_PLC_V4.04.pdf" title="PLC Documentation"></iframe>
         </div>
         <p class="modal-section-label">PLC Source Code</p>
         <div class="modal-code-block">
           <pre id="deltaCode">Click to load…</pre>
         </div>
-        <button class="btn btn-sm" data-load-code="../School/2_/Auto_V4.04.txt" data-target="deltaCode">
+        <button class="btn btn-sm" data-load-code="School/2_/Auto_V4.04.txt" data-target="deltaCode">
           Load PLC Code
         </button>
       `
@@ -292,29 +288,29 @@ function openProject(id) {
       html: () => `
         <p class="modal-section-label">Analysis Plots</p>
         <div class="modal-gallery">
-          <img src="../School/1_/PID Project/Root Locus.png" alt="Root Locus Plot" />
-          <img src="../School/1_/PID Project/System Stability (Root Locus).png" alt="System Stability" />
-          <img src="../School/1_/PID Project/Step Response.png" alt="Step Response" />
-          <img src="../School/1_/PID Project/Step Response Analysis.png" alt="Step Response Analysis" />
-          <img src="../School/1_/PID Project/Theoretical Step Response.png" alt="Theoretical Step Response" />
-          <img src="../School/1_/PID Project/Final Project Validation.png" alt="Final Validation" />
+          <img src="School/1_/PID Project/Root Locus.png" alt="Root Locus Plot" />
+          <img src="School/1_/PID Project/System Stability (Root Locus).png" alt="System Stability" />
+          <img src="School/1_/PID Project/Step Response.png" alt="Step Response" />
+          <img src="School/1_/PID Project/Step Response Analysis.png" alt="Step Response Analysis" />
+          <img src="School/1_/PID Project/Theoretical Step Response.png" alt="Theoretical Step Response" />
+          <img src="School/1_/PID Project/Final Project Validation.png" alt="Final Validation" />
         </div>
         <p class="modal-section-label">Project Report (PDF)</p>
         <div class="modal-pdf-wrap">
-          <iframe src="../School/1_/PID Project/ENGR3540 Final Project Report.pdf" title="PID Project Report"></iframe>
+          <iframe src="School/1_/PID Project/ENGR3540 Final Project Report.pdf" title="PID Project Report"></iframe>
         </div>
         <p class="modal-section-label">MATLAB Source Code</p>
         <div class="modal-code-block">
           <pre id="matlabCode">Click to load…</pre>
         </div>
-        <button class="btn btn-sm" data-load-code="../School/1_/PID Project/DancerArm_Analysis_V2.m" data-target="matlabCode" style="margin-bottom:1.5rem;">
+        <button class="btn btn-sm" data-load-code="School/1_/PID Project/DancerArm_Analysis_V2.m" data-target="matlabCode" style="margin-bottom:1.5rem;">
           Load MATLAB Script
         </button>
         <p class="modal-section-label">PLC Structured Text (Tension Control)</p>
         <div class="modal-code-block">
           <pre id="stCode">Click to load…</pre>
         </div>
-        <button class="btn btn-sm" data-load-code="../School/1_/PID Project/TensionControl_ST_V2.txt" data-target="stCode">
+        <button class="btn btn-sm" data-load-code="School/1_/PID Project/TensionControl_ST_V2.txt" data-target="stCode">
           Load ST Code
         </button>
       `
@@ -329,28 +325,28 @@ function openProject(id) {
       html: () => `
         <p class="modal-section-label">Circuit Simulations</p>
         <div class="modal-gallery">
-          <img src="../School/1_/Speaker Project/SIM_CIRC1.PNG" alt="Circuit Sim 1" />
-          <img src="../School/1_/Speaker Project/SIM_CIRC2.PNG" alt="Circuit Sim 2" />
-          <img src="../School/1_/Speaker Project/SIM_CIRC3.PNG" alt="Circuit Sim 3" />
-          <img src="../School/1_/Speaker Project/SIM_CIRC4.PNG" alt="Circuit Sim 4" />
+          <img src="School/1_/Speaker Project/SIM_CIRC1.PNG" alt="Circuit Sim 1" />
+          <img src="School/1_/Speaker Project/SIM_CIRC2.PNG" alt="Circuit Sim 2" />
+          <img src="School/1_/Speaker Project/SIM_CIRC3.PNG" alt="Circuit Sim 3" />
+          <img src="School/1_/Speaker Project/SIM_CIRC4.PNG" alt="Circuit Sim 4" />
         </div>
         <p class="modal-section-label">Oscilloscope / Sweep Results</p>
         <div class="modal-gallery">
-          <img src="../School/1_/Speaker Project/Sweep1.PNG" alt="Frequency Sweep 1" />
-          <img src="../School/1_/Speaker Project/Sweep2.PNG" alt="Frequency Sweep 2" />
-          <img src="../School/1_/Speaker Project/XSC1_1.PNG" alt="Oscilloscope 1" />
-          <img src="../School/1_/Speaker Project/XSC1_2.PNG" alt="Oscilloscope 2" />
-          <img src="../School/1_/Speaker Project/XSC1_3.PNG" alt="Oscilloscope 3" />
+          <img src="School/1_/Speaker Project/Sweep1.PNG" alt="Frequency Sweep 1" />
+          <img src="School/1_/Speaker Project/Sweep2.PNG" alt="Frequency Sweep 2" />
+          <img src="School/1_/Speaker Project/XSC1_1.PNG" alt="Oscilloscope 1" />
+          <img src="School/1_/Speaker Project/XSC1_2.PNG" alt="Oscilloscope 2" />
+          <img src="School/1_/Speaker Project/XSC1_3.PNG" alt="Oscilloscope 3" />
         </div>
         <p class="modal-section-label">Project Report (PDF)</p>
         <div class="modal-pdf-wrap">
-          <iframe src="../School/1_/Speaker Project/ENGR3530 Project Phase 2 Report.pdf" title="Amplifier Report"></iframe>
+          <iframe src="School/1_/Speaker Project/ENGR3530 Project Phase 2 Report.pdf" title="Amplifier Report"></iframe>
         </div>
         <p class="modal-section-label">Design Notes &amp; Calculations</p>
         <div class="modal-code-block">
           <pre id="speakerDesignCode">Click to load…</pre>
         </div>
-        <button class="btn btn-sm" data-load-code="../School/1_/Speaker Project/Circuit_Design_and_Math.txt" data-target="speakerDesignCode">
+        <button class="btn btn-sm" data-load-code="School/1_/Speaker Project/Circuit_Design_and_Math.txt" data-target="speakerDesignCode">
           Load Design Notes
         </button>
       `
@@ -401,13 +397,10 @@ function openProject(id) {
           <li>DNS Loop Debugging</li>
           <li>Network Assignment / Segmentation</li>
         </ul>
-        <p class="modal-section-label">Server Setup Documentation</p>
-        <div class="modal-markdown" id="serverMd">
-          <em style="color:var(--text-muted);">Click below to load the full server setup guide…</em>
-        </div>
-        <button class="btn btn-sm" style="margin-top:0.75rem;" onclick="loadMarkdown('../Hobbies/3_/Server_Setup.md','serverMd')">
-          Load Server Setup Guide
-        </button>
+        <p class="modal-desc">
+          The detailed server and home-network notes stay private, but the public summary highlights the same practical skill set:
+          Linux administration, VM isolation, network debugging, DNS troubleshooting, and security lab workflows.
+        </p>
       `
     },
 
@@ -447,23 +440,23 @@ function openProject(id) {
         <p class="modal-section-label">Demonstration Video</p>
         <div class="modal-video-wrap">
           <video controls preload="metadata">
-            <source src="../Hobbies/4_/RR_Logo.MOV" type="video/mp4" />
+            <source src="Hobbies/4_/RR_Logo.MOV" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
         <p class="modal-section-label" style="margin-top:1.5rem;">Reference Guides (PDF)</p>
         <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1.5rem;">
-          <a href="../Hobbies/4_/E-SyS 3.18.4 step-by-step (MWPos) V 5-19-2013.pdf" target="_blank" class="btn btn-sm">📄 E-SyS Step-by-Step Guide</a>
-          <a href="../Hobbies/4_/FA (VO) Step-By-Step (MWPos) 8-24-2013.pdf"         target="_blank" class="btn btn-sm">📄 FA/VO Modification Guide</a>
-          <a href="../Hobbies/4_/By Function Cheat Sheet F10 2011-LCI (MWPos) 10-24-2013.pdf" target="_blank" class="btn btn-sm">📄 F10 Function Cheat Sheet</a>
-          <a href="../Hobbies/4_/F10 Cheatsheet - F10 Cheatsheet clean.pdf"            target="_blank" class="btn btn-sm">📄 F10 Cheatsheet (Clean)</a>
+          <a href="Hobbies/4_/E-SyS 3.18.4 step-by-step (MWPos) V 5-19-2013.pdf" target="_blank" class="btn btn-sm">📄 E-SyS Step-by-Step Guide</a>
+          <a href="Hobbies/4_/FA (VO) Step-By-Step (MWPos) 8-24-2013.pdf"         target="_blank" class="btn btn-sm">📄 FA/VO Modification Guide</a>
+          <a href="Hobbies/4_/By Function Cheat Sheet F10 2011-LCI (MWPos) 10-24-2013.pdf" target="_blank" class="btn btn-sm">📄 F10 Function Cheat Sheet</a>
+          <a href="Hobbies/4_/F10 Cheatsheet - F10 Cheatsheet clean.pdf"            target="_blank" class="btn btn-sm">📄 F10 Cheatsheet (Clean)</a>
         </div>
         <p class="modal-section-label">BimmerCode ECU Settings</p>
         <p class="modal-desc">
           A spreadsheet of custom ECU coding settings is maintained in an Excel document tracking all applied codes, 
           their functions, and original/modified values for traceability.
         </p>
-        <a href="../Hobbies/4_/19_08_15 BimmerCode ECU Settings.xlsx" target="_blank" class="btn btn-sm">📊 Open ECU Settings Spreadsheet</a>
+        <a href="Hobbies/4_/19_08_15 BimmerCode ECU Settings.xlsx" target="_blank" class="btn btn-sm">📊 Open ECU Settings Spreadsheet</a>
       `
     }
 
