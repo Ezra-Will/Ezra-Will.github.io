@@ -79,8 +79,8 @@ function openModal(html) {
   overlay.classList.add('active');
   document.body.style.overflow = 'hidden';
 
-  // Wire up gallery images inside modal to lightbox
-  modalBody.querySelectorAll('.modal-gallery img').forEach(img => {
+  // Wire up gallery and comparison images inside modal to lightbox
+  modalBody.querySelectorAll('.modal-gallery img, .comparison-card img').forEach(img => {
     img.style.cursor = 'zoom-in';
     img.addEventListener('click', () => openLightbox(img.src, img.alt));
   });
@@ -129,36 +129,42 @@ function openProject(id) {
     /* ── WORK ─────────────────────────────────────────── */
 
     dept69: {
-      title: 'Dept69 — Electrical Enclosure Rebuild',
+      title: 'Project 1 (Enclosure Rebuild)',
       subtitle: 'Work Experience · Electrical',
-      desc: `Inherited a "jungle" of disorganized wiring inside industrial electrical enclosures and led the cleanup and rebuild effort. 
-             Each enclosure was fully documented before teardown, rewired to standard, and photographed after completion. 
-             The result was a safe, maintainable, and inspection-ready installation.`,
+      desc: `Inherited a disorganized wiring setup inside industrial electrical enclosures and led the cleanup and rebuild effort. 
+             Each enclosure was documented before teardown, rewired to standard, and photographed after completion. 
+             The result was a safe, maintainable, and professional installation.`,
       html: () => `
-        <p class="modal-section-label">Before &amp; After Gallery</p>
-        <div class="modal-gallery">
-          <div class="img-compare-wrap">
-            <p style="color:var(--text-muted);font-size:0.78rem;margin-bottom:4px;">BEFORE</p>
-            <img src="Work/1_/8718Before.jpg"  alt="Enclosure 8718 Before" />
+        <p class="modal-section-label">Before &amp; After Comparison</p>
+        <div class="comparison-gallery">
+          <div class="comparison-row">
+            <div class="comparison-card">
+              <img src="Work/1_/8718Before.jpg" alt="Enclosure 1 (Before)" />
+              <div class="comparison-label">Enclosure 1 (Before)</div>
+            </div>
+            <div class="comparison-arrow">▶</div>
+            <div class="comparison-card">
+              <img src="Work/1_/8718After.jpg" alt="Enclosure 1 (After)" />
+              <div class="comparison-label">Enclosure 1 (After)</div>
+            </div>
           </div>
-          <div class="img-compare-wrap">
-            <p style="color:var(--accent-2);font-size:0.78rem;margin-bottom:4px;">AFTER</p>
-            <img src="Work/1_/8718After.jpg"   alt="Enclosure 8718 After" />
-          </div>
-          <div class="img-compare-wrap">
-            <p style="color:var(--text-muted);font-size:0.78rem;margin-bottom:4px;">BEFORE</p>
-            <img src="Work/1_/8720Before.jpg"  alt="Enclosure 8720 Before" />
-          </div>
-          <div class="img-compare-wrap">
-            <p style="color:var(--accent-2);font-size:0.78rem;margin-bottom:4px;">AFTER</p>
-            <img src="Work/1_/8720AfterInstall.jpg" alt="Enclosure 8720 After" />
+          <div class="comparison-row">
+            <div class="comparison-card">
+              <img src="Work/1_/8720Before.jpg" alt="Enclosure 2 (Before)" />
+              <div class="comparison-label">Enclosure 2 (Before)</div>
+            </div>
+            <div class="comparison-arrow">▶</div>
+            <div class="comparison-card">
+              <img src="Work/1_/8720AfterInstall.jpg" alt="Enclosure 2 (After)" />
+              <div class="comparison-label">Enclosure 2 (After)</div>
+            </div>
           </div>
         </div>
       `
     },
 
     rolling: {
-      title: 'Rolling Machines — Build Documentation',
+      title: 'Project 3 (Rolling Machine Build)',
       subtitle: 'Work Experience · Fabrication & Electrical',
       desc: `Comprehensive photo documentation of rolling machine builds throughout various stages of assembly, wiring, and final installation. 
              These machines were built and commissioned on-site, requiring coordination of mechanical, electrical, and controls work.`,
@@ -177,14 +183,20 @@ function openProject(id) {
     },
 
     powder: {
-      title: 'Rolling Machine — Controls Package',
+      title: 'Project 2 (Controls Package)',
       subtitle: 'Work Experience · PLC · HMI · Wiring',
-      desc: `Controls documentation for a rolling machine build — encompassing PLC documentation, exported logic, wiring schematics,
+      desc: `Controls documentation for a machine build — encompassing PLC documentation, exported logic, wiring schematics,
              and support files. The package gives future troubleshooting work a clear path from code to wiring to field I/O.`,
       html: () => `
+        <p class="modal-section-label">Enclosure Photos</p>
+        <div class="modal-gallery">
+          <img src="Work/2_/enclosure_overview.jpg" alt="Electrical Enclosure Overview" onerror="this.style.display='none';" />
+          <img src="Work/2_/enclosure_side1.jpg" alt="Enclosure Side 1" onerror="this.style.display='none';" />
+          <img src="Work/2_/enclosure_side2.jpg" alt="Enclosure Side 2" onerror="this.style.display='none';" />
+        </div>
         <p class="modal-section-label">PLC Documentation (PDF)</p>
         <div class="modal-pdf-wrap">
-          <iframe src="Work/2_/01 PLC & HMI/Rolling_Machine_PLC_V1.01.pdf" title="Rolling Machine PLC Documentation"></iframe>
+          <iframe src="Work/2_/01 PLC & HMI/Rolling_Machine_PLC_V1.01.pdf#navpanes=0" title="PLC Documentation"></iframe>
         </div>
         <p class="modal-section-label">Electrical Schematics</p>
         <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1.5rem;">
@@ -211,9 +223,9 @@ function openProject(id) {
     },
 
     batchmaster: {
-      title: 'Batchmaster — Network Architecture',
+      title: 'Project 4 (Network Architecture Schematics)',
       subtitle: 'Work Experience · IT/OT · Network Design',
-      desc: `Designed and documented a full network architecture for a Batchmaster production system. 
+      desc: `Designed and documented the network architecture for an industrial system. 
              Work included topology planning, IT/OT boundary definition, wiring overview drawings in CAD, 
              and PDF deliverable packages for handoff to the customer.`,
       html: () => `
@@ -224,7 +236,7 @@ function openProject(id) {
         </div>
         <p class="modal-section-label">Architecture Overview (PDF)</p>
         <div class="modal-pdf-wrap">
-          <iframe src="Work/4_/NetworkArchitecture/OVERVIEW.pdf" title="Network Architecture Overview"></iframe>
+          <iframe src="Work/4_/NetworkArchitecture/OVERVIEW.pdf#navpanes=0" title="Network Architecture Overview"></iframe>
         </div>
         <p class="modal-section-label">Schematic Package</p>
         <div style="display:flex;flex-wrap:wrap;gap:0.6rem;">
@@ -267,7 +279,7 @@ function openProject(id) {
         </div>
         <p class="modal-section-label">PLC Documentation</p>
         <div class="modal-pdf-wrap">
-          <iframe src="School/2_/4580_PLC_V4.04.pdf" title="PLC Documentation"></iframe>
+          <iframe src="School/2_/4580_PLC_V4.04.pdf#navpanes=0" title="PLC Documentation"></iframe>
         </div>
         <p class="modal-section-label">PLC Source Code</p>
         <div class="modal-code-block">
@@ -297,7 +309,7 @@ function openProject(id) {
         </div>
         <p class="modal-section-label">Project Report (PDF)</p>
         <div class="modal-pdf-wrap">
-          <iframe src="School/1_/PID Project/ENGR3540 Final Project Report.pdf" title="PID Project Report"></iframe>
+          <iframe src="School/1_/PID Project/ENGR3540 Final Project Report.pdf#navpanes=0" title="PID Project Report"></iframe>
         </div>
         <p class="modal-section-label">MATLAB Source Code</p>
         <div class="modal-code-block">
@@ -340,7 +352,7 @@ function openProject(id) {
         </div>
         <p class="modal-section-label">Project Report (PDF)</p>
         <div class="modal-pdf-wrap">
-          <iframe src="School/1_/Speaker Project/ENGR3530 Project Phase 2 Report.pdf" title="Amplifier Report"></iframe>
+          <iframe src="School/1_/Speaker Project/ENGR3530 Project Phase 2 Report.pdf#navpanes=0" title="Amplifier Report"></iframe>
         </div>
         <p class="modal-section-label">Design Notes &amp; Calculations</p>
         <div class="modal-code-block">
@@ -349,6 +361,18 @@ function openProject(id) {
         <button class="btn btn-sm" data-load-code="School/1_/Speaker Project/Circuit_Design_and_Math.txt" data-target="speakerDesignCode">
           Load Design Notes
         </button>
+      `
+    },
+
+    syllabus: {
+      title: 'MTSU Coursework Outline',
+      subtitle: 'Education · Syllabus',
+      desc: `The official course outline and syllabus detailing the curriculum, topics, and lab objectives for Austin's engineering studies.`,
+      html: () => `
+        <p class="modal-section-label">Course Outline (PDF)</p>
+        <div class="modal-pdf-wrap">
+          <iframe src="School/1_/Class_Outline.pdf#navpanes=0" title="MTSU Coursework Outline"></iframe>
+        </div>
       `
     },
 

@@ -159,7 +159,7 @@ ul { list-style: none; }
   width: 100%; height: 100%;
   object-fit: cover;
   object-position: center 30%;
-  filter: brightness(0.45) saturate(0.7);
+  filter: brightness(0.6) saturate(0.85);
   transform: scale(1.05);
   animation: heroZoom 20s ease-in-out infinite alternate;
 }
@@ -174,9 +174,9 @@ ul { list-style: none; }
   inset: 0;
   background: linear-gradient(
     160deg,
-    rgba(10,13,20,0.3) 0%,
-    rgba(10,13,20,0.6) 50%,
-    rgba(10,13,20,0.92) 100%
+    rgba(10,13,20,0.25) 0%,
+    rgba(10,13,20,0.55) 50%,
+    rgba(10,13,20,0.85) 100%
   );
 }
 
@@ -421,13 +421,15 @@ ul { list-style: none; }
   height: 300px;
 }
 
-.project-thumb img {
+.project-thumb img,
+.project-thumb video {
   width: 100%; height: 100%;
   object-fit: cover;
   transition: transform 0.5s ease;
 }
 
-.project-card:hover .project-thumb img {
+.project-card:hover .project-thumb img,
+.project-card:hover .project-thumb video {
   transform: scale(1.06);
 }
 
@@ -927,6 +929,76 @@ ul { list-style: none; }
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* ═══════════════════════════════════════════════════════
+   BEFORE & AFTER COMPARISON GALLERY
+   Used in Project 1 (Enclosure Rebuild)
+═══════════════════════════════════════════════════════ */
+.comparison-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.comparison-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.comparison-card {
+  flex: 1;
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  transition: var(--transition);
+}
+
+.comparison-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+  cursor: zoom-in;
+}
+
+.comparison-card:hover img {
+  transform: scale(1.03);
+}
+
+.comparison-card:hover {
+  border-color: var(--border-hover);
+}
+
+.comparison-label {
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: rgba(20, 25, 40, 0.85);
+  border-top: 1px solid var(--border);
+}
+
+.comparison-arrow {
+  font-size: 1.5rem;
+  color: var(--accent-2);
+  user-select: none;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .comparison-row {
+    flex-direction: column;
+  }
+  .comparison-arrow {
+    transform: rotate(90deg);
+    margin: 0.25rem 0;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════

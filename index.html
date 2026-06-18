@@ -41,8 +41,8 @@
       <div class="hero-badge">Controls &amp; Automation Engineer</div>
       <h1 class="hero-name">Austin Williams</h1>
       <p class="hero-tagline">
-        Building systems that move, think, and communicate —<br />
-        from electrical enclosures to network architecture.
+        Designing and building industrial automation systems —<br />
+        bridging electrical design, PLC controls, and network architecture.
       </p>
       <div class="hero-tags">
         <span class="tag">PLC Programming</span>
@@ -75,10 +75,10 @@
 
       <div class="projects-grid">
 
-        <!-- Card 1: Dept69 Electrical -->
+        <!-- Card 1: Project 1 (Enclosure Rebuild) -->
         <div class="project-card reveal" data-project="dept69">
           <div class="project-thumb">
-            <img src="Work/1_/8718Before.jpg" alt="Dept69 Electrical Enclosure" loading="lazy" />
+            <img src="Work/1_/8720AfterInstall.jpg" alt="Electrical Enclosure Rebuild" loading="lazy" />
             <div class="project-thumb-overlay">
               <button class="thumb-btn" onclick="openProject('dept69')">View Project</button>
             </div>
@@ -88,13 +88,13 @@
               <span class="ptag">Electrical</span>
               <span class="ptag">Panel Build</span>
             </div>
-            <h3 class="project-title">Dept69 — Electrical Enclosure Rebuild</h3>
-            <p class="project-desc">Cleaned up and rebuilt electrical enclosures from a "jungle" of wiring into organized, professional installations.</p>
+            <h3 class="project-title">Project 1 (Enclosure Rebuild)</h3>
+            <p class="project-desc">Cleaned up and rebuilt industrial electrical enclosures from a disorganized wiring layout into organized, professional installations.</p>
             <button class="btn btn-sm" onclick="openProject('dept69')">Explore →</button>
           </div>
         </div>
 
-        <!-- Card 2: Rolling Machine -->
+        <!-- Card 2: Project 3 (Rolling Machine Build) -->
         <div class="project-card reveal" data-project="rolling">
           <div class="project-thumb">
             <img src="Work/3_/IMG_2249.JPG" alt="Rolling Machine Build" loading="lazy" />
@@ -108,17 +108,17 @@
               <span class="ptag">Electrical</span>
               <span class="ptag">Photos</span>
             </div>
-            <h3 class="project-title">Rolling Machines — Build Documentation</h3>
+            <h3 class="project-title">Project 3 (Rolling Machine Build)</h3>
             <p class="project-desc">Photo documentation of rolling machine builds including mechanical assembly, wiring, and installation phases.</p>
             <button class="btn btn-sm" onclick="openProject('rolling')">Explore →</button>
           </div>
         </div>
 
-        <!-- Card 3: Powder Coater -->
+        <!-- Card 3: Project 2 (Controls Package) -->
         <div class="project-card reveal" data-project="powder">
           <div class="project-thumb">
-            <div class="thumb-placeholder powder-bg">
-              <span class="thumb-icon">⚡</span>
+            <div class="thumb-placeholder powder-bg" style="background: linear-gradient(135deg, #1e293b, #0f172a); display: flex; align-items: center; justify-content: center; flex-direction: column; height: 100%; color: var(--text-secondary);">
+              <span class="thumb-icon" style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-2);">⚡</span>
               <span>PLC &amp; Wiring Schematics</span>
             </div>
             <div class="project-thumb-overlay">
@@ -131,16 +131,16 @@
               <span class="ptag">Schematics</span>
               <span class="ptag">HMI</span>
             </div>
-            <h3 class="project-title">Rolling Machine — Controls Package</h3>
-            <p class="project-desc">PLC documentation, exported logic, wiring schematics, and I/O support files for the rolling machine controls package.</p>
+            <h3 class="project-title">Project 2 (Controls Package)</h3>
+            <p class="project-desc">PLC documentation, exported logic, wiring schematics, and I/O support files for the machine controls package.</p>
             <button class="btn btn-sm" onclick="openProject('powder')">Explore →</button>
           </div>
         </div>
 
-        <!-- Card 4: Batchmaster Network -->
+        <!-- Card 4: Project 4 (Network Architecture Schematics) -->
         <div class="project-card reveal" data-project="batchmaster">
           <div class="project-thumb">
-            <img src="Work/4_/NetworkArchitecture/network example.png" alt="Batchmaster Network Architecture" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'thumb-placeholder network-bg\'><span class=\'thumb-icon\'>🌐</span><span>Network Architecture</span></div>'" />
+            <img src="Work/4_/NetworkArchitecture/network example.png" alt="Network Architecture" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'thumb-placeholder network-bg\'><span class=\'thumb-icon\'>🌐</span><span>Network Architecture</span></div>'" />
             <div class="project-thumb-overlay">
               <button class="thumb-btn" onclick="openProject('batchmaster')">View Project</button>
             </div>
@@ -151,8 +151,8 @@
               <span class="ptag">IT/OT</span>
               <span class="ptag">Architecture</span>
             </div>
-            <h3 class="project-title">Batchmaster — Network Architecture</h3>
-            <p class="project-desc">Designed and documented the network architecture for a Batchmaster system including IT/OT topology, wiring overviews, and CAD drawings.</p>
+            <h3 class="project-title">Project 4 (Network Architecture Schematics)</h3>
+            <p class="project-desc">Designed and documented the network architecture for an industrial system including IT/OT topology, wiring overviews, and CAD drawings.</p>
             <button class="btn btn-sm" onclick="openProject('batchmaster')">Explore →</button>
           </div>
         </div>
@@ -177,7 +177,10 @@
         <!-- Delta Robot -->
         <div class="project-card reveal featured" data-project="delta">
           <div class="project-thumb">
-            <img src="School/2_/Machine_FrontView1.JPG" alt="Delta Robot" loading="lazy" />
+            <video class="project-video-preview" autoplay loop muted playsinline poster="School/2_/Machine_FrontView1.JPG">
+              <source src="School/2_/Video1.MP4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
             <div class="project-thumb-overlay">
               <button class="thumb-btn" onclick="openProject('delta')">View Project</button>
             </div>
@@ -236,7 +239,28 @@
           </div>
         </div>
 
-      </div>
+        <!-- Course Outline / Syllabus -->
+        <div class="project-card reveal" data-project="syllabus">
+          <div class="project-thumb">
+            <div class="thumb-placeholder course-bg" style="background: linear-gradient(135deg, #1e293b, #0f172a); display: flex; align-items: center; justify-content: center; flex-direction: column; height: 100%; color: var(--text-secondary);">
+              <span class="thumb-icon" style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-2);">📚</span>
+              <span>Class Outline &amp; Syllabus</span>
+            </div>
+            <div class="project-thumb-overlay">
+              <button class="thumb-btn" onclick="openProject('syllabus')">View Syllabus</button>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-tags">
+              <span class="ptag">Education</span>
+              <span class="ptag">Syllabus</span>
+              <span class="ptag">PDF</span>
+            </div>
+            <h3 class="project-title">MTSU Coursework Outline</h3>
+            <p class="project-desc">Official curriculum and coursework outline detailing engineering classes, syllabus, and lab objectives.</p>
+            <button class="btn btn-sm" onclick="openProject('syllabus')">Explore →</button>
+          </div>
+        </div>
     </div>
   </section>
 
@@ -298,7 +322,7 @@
       <div class="resume-viewer">
         <iframe
           id="resumeFrame"
-          src="Resumes/Austin Williams Resume 2026.pdf"
+          src="Resumes/Austin Williams Resume 2026.pdf#navpanes=0"
           title="Austin Williams Resume 2026"
           class="resume-iframe"
         ></iframe>
