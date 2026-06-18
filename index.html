@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Austin Williams — Controls & Automation Engineer</title>
+  <meta name="description" content="Portfolio of Austin Williams — Controls & Automation Engineer with experience in PLC programming, electrical design, robotics, and network architecture." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       NAVIGATION
+  ═══════════════════════════════════════════════ -->
+  <nav id="navbar">
+    <div class="nav-logo">AW</div>
+    <ul class="nav-links">
+      <li><a href="#about" class="nav-link">About</a></li>
+      <li><a href="#work" class="nav-link">Work</a></li>
+      <li><a href="#school" class="nav-link">School</a></li>
+      <li><a href="#hobbies" class="nav-link">Hobbies</a></li>
+      <li><a href="#resume" class="nav-link">Resume</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════
+       HERO / ABOUT
+  ═══════════════════════════════════════════════ -->
+  <section id="about" class="hero">
+    <div class="hero-bg">
+      <img src="../IMG_1850.JPG" alt="Austin Williams" class="hero-bg-img" />
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">Controls &amp; Automation Engineer</div>
+      <h1 class="hero-name">Austin Williams</h1>
+      <p class="hero-tagline">
+        Building systems that move, think, and communicate —<br />
+        from electrical enclosures to network architecture.
+      </p>
+      <div class="hero-tags">
+        <span class="tag">PLC Programming</span>
+        <span class="tag">Electrical Design</span>
+        <span class="tag">Robotics</span>
+        <span class="tag">Network Architecture</span>
+        <span class="tag">CAD</span>
+        <span class="tag">Linux</span>
+      </div>
+      <div class="hero-actions">
+        <a href="#work" class="btn btn-primary">View My Work</a>
+        <a href="../Resumes/Austin Williams Resume 2026.pdf" target="_blank" class="btn btn-outline">Download Resume</a>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       WORK EXPERIENCE
+  ═══════════════════════════════════════════════ -->
+  <section id="work" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Experience</span>
+        <h2 class="section-title">Work Projects</h2>
+        <p class="section-sub">Real-world engineering — from hands-on electrical builds to large-scale automation systems.</p>
+      </div>
+
+      <div class="projects-grid">
+
+        <!-- Card 1: Dept69 Electrical -->
+        <div class="project-card reveal" data-project="dept69">
+          <div class="project-thumb">
+            <img src="../Work/1_/8718Before.jpg" alt="Dept69 Electrical Enclosure" loading="lazy" />
+            <div class="project-thumb-overlay">
+              <button class="thumb-btn" onclick="openProject('dept69')">View Project</button>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-tags">
+              <span class="ptag">Electrical</span>
+              <span class="ptag">Panel Build</span>
+            </div>
+            <h3 class="project-title">Dept69 — Electrical Enclosure Rebuild</h3>
+            <p class="project-desc">Cleaned up and rebuilt electrical enclosures from a "jungle" of wiring into organized, professional installations.</p>
+            <button class="btn btn-sm" onclick="openProject('dept69')">Explore →</button>
+          </div>
+        </div>
+
+        <!-- Card 2: Rolling Machine -->
+        <div class="project-card reveal" data-project="rolling">
+          <div class="project-thumb">
+            <img src="../Work/2_/IMG_2249.JPG" alt="Rolling Machine Build" loading="lazy" />
+            <div class="project-thumb-overlay">
+              <button class="thumb-btn" onclick="openProject('rolling')">View Project</button>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-tags">
+              <span class="ptag">Fabrication</span>
+              <span class="ptag">Electrical</span>
+              <span class="ptag">Photos</span>
+            </div>
+            <h3 class="project-title">Rolling Machines — Build Documentation</h3>
+            <p class="project-desc">Photo documentation of rolling machine builds including mechanical assembly, wiring, and installation phases.</p>
+            <button class="btn btn-sm" onclick="openProject('rolling')">Explore →</button>
+          </div>
+        </div>
+
+        <!-- Card 3: Powder Coater -->
+        <div class="project-card reveal" data-project="powder">
+          <div class="project-thumb">
+            <div class="thumb-placeholder powder-bg">
+              <span class="thumb-icon">⚡</span>
+              <span>PLC &amp; Wiring Schematics</span>
+            </div>
+            <div class="project-thumb-overlay">
+              <button class="thumb-btn" onclick="openProject('powder')">View Project</button>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-tags">
+              <span class="ptag">PLC</span>
+              <span class="ptag">Schematics</span>
+              <span class="ptag">HMI</span>
+            </div>
+            <h3 class="project-title">Powder Coater — Control Panel</h3>
+            <p class="project-desc">Full panel build with PLC programming, HMI integration, wiring schematics, and support documentation.</p>
+            <button class="btn btn-sm" onclick="openProject('powder')">Explore →</button>
+          </div>
+        </div>
+
+        <!-- Card 4: Batchmaster Network -->
+        <div class="project-card reveal" data-project="batchmaster">
+          <div class="project-thumb">
+            <img src="../Work/4_/NetworkArchitecture/network example.png" alt="Batchmaster Network Architecture" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'thumb-placeholder network-bg\'><span class=\'thumb-icon\'>🌐</span><span>Network Architecture</span></div>'" />
+            <div class="project-thumb-overlay">
+              <button class="thumb-btn" onclick="openProject('batchmaster')">View Project</button>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-tags">
+              <span class="ptag">Networking</span>
+              <span class="ptag">IT/OT</span>
+              <span class="ptag">Architecture</span>
+            </div>
+            <h3 class="project-title">Batchmaster — Network Architecture</h3>
+            <p class="project-desc">Designed and documented the network architecture for a Batchmaster system including IT/OT topology, wiring overviews, and CAD drawings.</p>
+            <button class="btn btn-sm" onclick="openProject('batchmaster')">Explore →</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SCHOOL / EDUCATION
+  ═══════════════════════════════════════════════ -->
+  <section id="school" class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Education</span>
+        <h2 class="section-title">School Projects</h2>
+        <p class="section-sub">From circuit design to robotics — hands-on engineering projects that bridge theory and reality.</p>
+      </div>
+
+      <div class="projects-grid">
+
+        <!-- Delta Robot -->
+        <div class="project-card reveal featured" data-project="delta">
+          <div class="project-thumb">
+            <img src="../School/2_/Machine_FrontView1.JPG" alt="Delta Robot" loading="lazy" />
+            <div class="project-thumb-overlay">
+              <button class="thumb-btn" onclick="openProject('delta')">View Project</button>
+            </div>
+            <div class="featured-badge">Featured</div>
+          </div>
+          <div class="project-info">
+            <div class="project-tags">
+              <span class="ptag">Robotics</span>
+              <span class="ptag">CAD</span>
+              <span class="ptag">PLC</span>
+              <span class="ptag">Video</span>
+            </div>
+            <h3 class="project-title">Delta Robot — Full Build</h3>
+            <p class="project-desc">End-to-end build of a delta robot: mechanical design in CAD, electrical enclosure wiring, PLC programming, and live video demonstrations.</p>
+            <button class="btn btn-sm" onclick="openProject('delta')">Explore →</button>
+          </div>
+        </div>
+
+        <!-- PID Project -->
+        <div class="project-card reveal" data-project="pid">
+          <div class="project-thumb">
+            <img src="../School/1_/PID Project/Root Locus.png" alt="PID Dancer Arm" loading="lazy" />
+            <div class="project-thumb-overlay">
+              <button class="thumb-btn" onclick="openProject('pid')">View Project</button>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-tags">
+              <span class="ptag">Controls</span>
+              <span class="ptag">MATLAB</span>
+              <span class="ptag">PID</span>
+            </div>
+            <h3 class="project-title">Dancer Arm — PID Tension Control</h3>
+            <p class="project-desc">Designed and tuned a PID controller for a dancer arm tension system. MATLAB simulation, root locus analysis, and real hardware validation.</p>
+            <button class="btn btn-sm" onclick="openProject('pid')">Explore →</button>
+          </div>
+        </div>
+
+        <!-- Speaker / Amplifier Project -->
+        <div class="project-card reveal" data-project="speaker">
+          <div class="project-thumb">
+            <img src="../School/1_/Speaker Project/SIM_CIRC1.PNG" alt="Audio Amplifier Project" loading="lazy" />
+            <div class="project-thumb-overlay">
+              <button class="thumb-btn" onclick="openProject('speaker')">View Project</button>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-tags">
+              <span class="ptag">Electronics</span>
+              <span class="ptag">Circuit Design</span>
+              <span class="ptag">Simulation</span>
+            </div>
+            <h3 class="project-title">Audio Amplifier — Speaker Build</h3>
+            <p class="project-desc">Designed a Class AB audio amplifier from scratch: circuit simulation, component selection, PCB layout, and oscilloscope verification.</p>
+            <button class="btn btn-sm" onclick="openProject('speaker')">Explore →</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       HOBBIES
+  ═══════════════════════════════════════════════ -->
+  <section id="hobbies" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Personal</span>
+        <h2 class="section-title">Hobbies &amp; Side Projects</h2>
+        <p class="section-sub">What I do when I'm not on the clock — systems, networks, servers, and cars.</p>
+      </div>
+
+      <div class="hobbies-grid">
+
+        <div class="hobby-card reveal" onclick="openProject('vms')">
+          <div class="hobby-icon">💻</div>
+          <h3>Virtual Machines</h3>
+          <p>VMware Workstation Pro fleet covering industrial software (TIA Portal, Mitsubishi, E-SyS), CAD, Kali Linux, and more.</p>
+          <span class="hobby-link">View Details →</span>
+        </div>
+
+        <div class="hobby-card reveal" onclick="openProject('server')">
+          <div class="hobby-icon">🖥️</div>
+          <h3>Home Server &amp; Networking</h3>
+          <p>Built and maintained a home server environment with Kali Linux security testing, network monitoring, and custom configurations.</p>
+          <span class="hobby-link">View Setup Guide →</span>
+        </div>
+
+        <div class="hobby-card reveal" onclick="openProject('linux')">
+          <div class="hobby-icon">🐧</div>
+          <h3>Linux &amp; Windows Systems</h3>
+          <p>Daily driver across multiple Linux distros and Windows environments. Network debugging, system administration, and scripting.</p>
+          <span class="hobby-link">View Details →</span>
+        </div>
+
+        <div class="hobby-card reveal" onclick="openProject('bmw')">
+          <div class="hobby-icon">🚗</div>
+          <h3>BMW E-SyS Programming</h3>
+          <p>ECU coding and feature unlocking using E-SyS, BimmerCode, and FA/VO modification — documented with guides and video.</p>
+          <span class="hobby-link">View Details →</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       RESUME SECTION
+  ═══════════════════════════════════════════════ -->
+  <section id="resume" class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Resume</span>
+        <h2 class="section-title">Download My Resume</h2>
+        <p class="section-sub">Multiple tailored versions available for different roles.</p>
+      </div>
+      <div class="resume-viewer">
+        <iframe
+          id="resumeFrame"
+          src="../Resumes/Austin Williams Resume 2026.pdf"
+          title="Austin Williams Resume 2026"
+          class="resume-iframe"
+        ></iframe>
+      </div>
+      <div class="resume-downloads">
+        <a href="../Resumes/Austin Williams Resume 2026.pdf" target="_blank" class="btn btn-primary">⬇ Download Latest Resume</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-name">Austin Williams</p>
+      <p class="footer-role">Controls &amp; Automation Engineer</p>
+      <p class="footer-copy">© 2026 — Built with purpose.</p>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════
+       MODALS / PROJECT DETAIL OVERLAYS
+  ═══════════════════════════════════════════════ -->
+  <div id="modalOverlay" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal" id="modal">
+      <button class="modal-close" onclick="closeProjectModal()">✕</button>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
