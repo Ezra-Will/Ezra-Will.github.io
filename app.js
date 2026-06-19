@@ -164,39 +164,14 @@ function openProject(id) {
     },
 
     rolling: {
-      title: 'Project 3 (Rolling Machine Build)',
-      subtitle: 'Work Experience · Fabrication & Electrical',
-      desc: `Comprehensive photo documentation of rolling machine builds throughout various stages of assembly, wiring, and final installation. 
-             These machines were built and commissioned on-site, requiring coordination of mechanical, electrical, and controls work.`,
-      html: () => `
-        <p class="modal-section-label">Photo Documentation</p>
-        <div class="modal-gallery">
-          ${[
-            'IMG_2249','IMG_2251','IMG_2254','IMG_2257',
-            'IMG_2258','IMG_2259','IMG_2260','IMG_2264',
-            'IMG_2265','IMG_2275','IMG_2276'
-          ].map(n =>
-            `<img src="Work/3_/${n}.JPG" alt="${n}" />`
-          ).join('')}
-        </div>
-      `
-    },
-
-    powder: {
-      title: 'Project 2 (Controls Package)',
+      title: 'Project 2 (Rolling Machine Panel)',
       subtitle: 'Work Experience · PLC · HMI · Wiring',
-      desc: `Controls documentation for a machine build — encompassing PLC documentation, exported logic, wiring schematics,
+      desc: `Controls documentation for a rolling machine panel build — encompassing PLC documentation, exported logic, wiring schematics,
              and support files. The package gives future troubleshooting work a clear path from code to wiring to field I/O.`,
       html: () => `
-        <p class="modal-section-label">Enclosure Photos</p>
-        <div class="modal-gallery">
-          <img src="Work/2_/enclosure_overview.jpg" alt="Electrical Enclosure Overview" onerror="this.style.display='none';" />
-          <img src="Work/2_/enclosure_side1.jpg" alt="Enclosure Side 1" onerror="this.style.display='none';" />
-          <img src="Work/2_/enclosure_side2.jpg" alt="Enclosure Side 2" onerror="this.style.display='none';" />
-        </div>
         <p class="modal-section-label">PLC Documentation (PDF)</p>
         <div class="modal-pdf-wrap">
-          <iframe src="Work/2_/01 PLC & HMI/Rolling_Machine_PLC_V1.01.pdf#navpanes=0" title="PLC Documentation"></iframe>
+          <iframe src="Work/2_/01 PLC & HMI/Rolling_Machine_PLC_V1.01.pdf#navpanes=0" title="Rolling Machine PLC Documentation"></iframe>
         </div>
         <p class="modal-section-label">Electrical Schematics</p>
         <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1.5rem;">
@@ -206,7 +181,7 @@ function openProject(id) {
             ['02 Wiring Schematics/New Rolling Machine Electrical Prints_2.pdf','Revised Electrical Prints'],
             ['02 Wiring Schematics/Rolling Machine w Transformer.pdf','Transformer Prints'],
           ].map(([file, label]) =>
-            `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">📄 ${label}</a>`
+            `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">PDF ${label}</a>`
           ).join('')}
         </div>
         <p class="modal-section-label">Code &amp; I/O References</p>
@@ -216,8 +191,31 @@ function openProject(id) {
             ['01 PLC & HMI/Exported_PLC_Logic/ProgPou.html','PLC Logic HTML'],
             ['03 Support Documents/Rolling_Machine_IOSheet.xlsx','I/O Sheet'],
           ].map(([file, label]) =>
-            `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">📄 ${label}</a>`
+            `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">${label}</a>`
           ).join('')}
+        </div>
+      `
+    },
+
+    powder: {
+      title: 'Project 3 (Powder Coater Panel)',
+      subtitle: 'Work Experience · Electrical Enclosure',
+      desc: `Electrical enclosure overview and panel side views for the powder coater controls enclosure.`,
+      html: () => `
+        <p class="modal-section-label">Enclosure Photos</p>
+        <div class="modal-gallery">
+          <figure>
+            <img src="Work/3_/IMG_2257.JPG" alt="Electrical enclosure overview" />
+            <figcaption>Electrical enclosure overview</figcaption>
+          </figure>
+          <figure>
+            <img src="Work/3_/IMG_2259.JPG" alt="Enclosure side 1" />
+            <figcaption>Enclosure side 1</figcaption>
+          </figure>
+          <figure>
+            <img src="Work/3_/IMG_2260.JPG" alt="Enclosure side 2" />
+            <figcaption>Enclosure side 2</figcaption>
+          </figure>
         </div>
       `
     },
@@ -259,7 +257,7 @@ function openProject(id) {
       subtitle: 'School Project · Robotics · CAD · PLC · Video',
       desc: `End-to-end design and build of a delta parallel robot. The project spanned mechanical design in CAD, 
              fabrication, electrical enclosure wiring, and PLC/motion programming. 
-             Two video demonstrations show the machine in operation.`,
+             A video demonstration shows the machine in operation.`,
       html: () => `
         <p class="modal-section-label">Demo Videos</p>
         <div class="modal-video-wrap" style="margin-bottom:1rem;">
