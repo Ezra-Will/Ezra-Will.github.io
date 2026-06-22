@@ -162,6 +162,12 @@ ul { list-style: none; }
   filter: brightness(0.6) saturate(0.85);
   transform: scale(1.05);
   animation: heroZoom 20s ease-in-out infinite alternate;
+  opacity: 1;
+  transition: opacity 0.7s ease;
+}
+
+.hero-bg-img.is-changing {
+  opacity: 0;
 }
 
 @keyframes heroZoom {
@@ -900,6 +906,42 @@ ul { list-style: none; }
   line-height: 1;
 }
 .lightbox-close:hover { color: #fff; }
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  background: rgba(8,10,16,0.72);
+  color: rgba(255,255,255,0.84);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 2.4rem;
+  line-height: 1;
+  transform: translateY(-50%);
+  transition: var(--transition);
+}
+
+.lightbox-nav:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.38);
+  color: #fff;
+}
+
+.lightbox-nav[hidden] {
+  display: none;
+}
+
+.lightbox-prev {
+  left: clamp(1rem, 4vw, 3rem);
+}
+
+.lightbox-next {
+  right: clamp(1rem, 4vw, 3rem);
+}
 
 /* ═══════════════════════════════════════════════════════
    FOOTER

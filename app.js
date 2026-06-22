@@ -41,21 +41,63 @@ const revealObserver = new IntersectionObserver(
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
+/* ─── HERO SLIDESHOW ────────────────────────────────── */
+const heroImg = document.querySelector('.hero-bg-img');
+const heroSlides = [
+  { src: 'IMG_1850.JPG', alt: 'Austin Williams' },
+  { src: 'IMG_1850.JPG', alt: 'Austin Williams' },
+];
+let heroSlideIndex = 0;
+
+if (heroImg && heroSlides.length > 1) {
+  setInterval(() => {
+    heroSlideIndex = (heroSlideIndex + 1) % heroSlides.length;
+    heroImg.classList.add('is-changing');
+
+    setTimeout(() => {
+      heroImg.src = heroSlides[heroSlideIndex].src;
+      heroImg.alt = heroSlides[heroSlideIndex].alt;
+      heroImg.classList.remove('is-changing');
+    }, 350);
+  }, 6500);
+}
+
 /* ─── LIGHTBOX ───────────────────────────────────────── */
 const lightbox = document.createElement('div');
 lightbox.className = 'lightbox';
 lightbox.innerHTML = `
+  <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous image">&lsaquo;</button>
   <button class="lightbox-close" id="lightboxClose">✕</button>
   <img id="lightboxImg" src="" alt="Full view" />
+  <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next image">&rsaquo;</button>
 `;
 document.body.appendChild(lightbox);
 
 const lightboxImg   = document.getElementById('lightboxImg');
 const lightboxClose = document.getElementById('lightboxClose');
+const lightboxPrev  = document.getElementById('lightboxPrev');
+const lightboxNext  = document.getElementById('lightboxNext');
+let lightboxImages = [];
+let lightboxIndex = 0;
 
-function openLightbox(src, alt = '') {
-  lightboxImg.src = src;
-  lightboxImg.alt = alt;
+function setLightboxImage(index) {
+  if (!lightboxImages.length) return;
+  lightboxIndex = (index + lightboxImages.length) % lightboxImages.length;
+  const activeImage = lightboxImages[lightboxIndex];
+  lightboxImg.src = activeImage.src;
+  lightboxImg.alt = activeImage.alt;
+}
+
+function updateLightboxControls() {
+  const canNavigate = lightboxImages.length > 1;
+  lightboxPrev.hidden = !canNavigate;
+  lightboxNext.hidden = !canNavigate;
+}
+
+function openLightbox(images, index = 0) {
+  lightboxImages = Array.isArray(images) ? images : [{ src: images, alt: '' }];
+  setLightboxImage(index);
+  updateLightboxControls();
   lightbox.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -65,7 +107,14 @@ function closeLightbox() {
   document.body.style.overflow = '';
 }
 
+function navigateLightbox(direction) {
+  if (!lightbox.classList.contains('active') || lightboxImages.length < 2) return;
+  setLightboxImage(lightboxIndex + direction);
+}
+
 lightboxClose.addEventListener('click', closeLightbox);
+lightboxPrev.addEventListener('click', () => navigateLightbox(-1));
+lightboxNext.addEventListener('click', () => navigateLightbox(1));
 lightbox.addEventListener('click', (e) => {
   if (e.target === lightbox) closeLightbox();
 });
@@ -80,9 +129,11 @@ function openModal(html) {
   document.body.style.overflow = 'hidden';
 
   // Wire up gallery and comparison images inside modal to lightbox
-  modalBody.querySelectorAll('.modal-gallery img, .comparison-card img').forEach(img => {
+  const modalImages = [...modalBody.querySelectorAll('.modal-gallery img, .comparison-card img')];
+  const lightboxItems = modalImages.map(img => ({ src: img.src, alt: img.alt }));
+  modalImages.forEach((img, index) => {
     img.style.cursor = 'zoom-in';
-    img.addEventListener('click', () => openLightbox(img.src, img.alt));
+    img.addEventListener('click', () => openLightbox(lightboxItems, index));
   });
 
   // Wire up any code-load buttons
@@ -104,6 +155,8 @@ function closeModal(e) {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { closeProjectModal(); closeLightbox(); }
+  if (e.key === 'ArrowLeft') navigateLightbox(-1);
+  if (e.key === 'ArrowRight') navigateLightbox(1);
 });
 
 async function loadCodeFile(path, targetId) {
