@@ -181,7 +181,7 @@ function openProject(id) {
             ['02 Wiring Schematics/New Rolling Machine Electrical Prints_2.pdf','Revised Electrical Prints'],
             ['02 Wiring Schematics/Rolling Machine w Transformer.pdf','Transformer Prints'],
           ].map(([file, label]) =>
-            `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">PDF ${label}</a>`
+            `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">📄 ${label}</a>`
           ).join('')}
         </div>
         <p class="modal-section-label">Code &amp; I/O References</p>
@@ -191,7 +191,7 @@ function openProject(id) {
             ['01 PLC & HMI/Exported_PLC_Logic/ProgPou.html','PLC Logic HTML'],
             ['03 Support Documents/Rolling_Machine_IOSheet.xlsx','I/O Sheet'],
           ].map(([file, label]) =>
-            `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">${label}</a>`
+            `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">📄 ${label}</a>`
           ).join('')}
         </div>
       `
