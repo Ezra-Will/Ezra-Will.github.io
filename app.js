@@ -222,27 +222,40 @@ function openProject(id) {
       desc: `Controls documentation for a rolling machine panel build — encompassing PLC documentation, exported logic, wiring schematics,
              and support files. The package gives future troubleshooting work a clear path from code to wiring to field I/O.`,
       html: () => `
-        <p class="modal-section-label">PLC Documentation (PDF)</p>
-        <div class="modal-pdf-wrap">
-          <iframe src="Work/2_/01 PLC & HMI/Rolling_Machine_PLC_V1.01.pdf#navpanes=0" title="Rolling Machine PLC Documentation"></iframe>
+        <p class="modal-section-label">Panel Photos</p>
+        <div class="modal-gallery">
+          <figure>
+            <img src="Work/2_/Panel_Bottom.JPG" alt="Rolling machine panel bottom" />
+            <figcaption>Panel bottom</figcaption>
+          </figure>
+          <figure>
+            <img src="Work/2_/Panel_Top.JPG" alt="Rolling machine panel top" />
+            <figcaption>Panel top</figcaption>
+          </figure>
         </div>
-        <p class="modal-section-label">Electrical Schematics</p>
+        <p class="modal-section-label">Electrical Prints (PDF)</p>
+        <div class="modal-pdf-wrap">
+          <iframe src="Work/2_/02 Wiring Schematics/Proj2 Electrical Prints.pdf#navpanes=0" title="Project 2 Electrical Prints"></iframe>
+        </div>
+        <p class="modal-section-label">PLC Code</p>
         <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1.5rem;">
           ${[
-            ['02 Wiring Schematics/English Electrical Prints.pdf','Original Prints'],
-            ['02 Wiring Schematics/New Rolling Machine Electrical Prints.pdf','New Electrical Prints'],
-            ['02 Wiring Schematics/New Rolling Machine Electrical Prints_2.pdf','Revised Electrical Prints'],
-            ['02 Wiring Schematics/Rolling Machine w Transformer.pdf','Transformer Prints'],
+            ['01 PLC & HMI/Rolling_Machine_PLC_V1.01.pdf','PLC Program PDF'],
+            ['01 PLC & HMI/Exported_PLC_Logic/ProgPou.txt','Exported PLC Logic'],
+            ['01 PLC & HMI/Exported_PLC_Logic/ProgPou.html','PLC Logic HTML'],
           ].map(([file, label]) =>
             `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">📄 ${label}</a>`
           ).join('')}
         </div>
-        <p class="modal-section-label">Code &amp; I/O References</p>
+        <p class="modal-section-label">Support Documents</p>
         <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1.5rem;">
           ${[
-            ['01 PLC & HMI/Exported_PLC_Logic/ProgPou.txt','Exported PLC Logic'],
-            ['01 PLC & HMI/Exported_PLC_Logic/ProgPou.html','PLC Logic HTML'],
             ['03 Support Documents/Rolling_Machine_IOSheet.xlsx','I/O Sheet'],
+            ['03 Support Documents/Festo-Valve Terminal Cable.pdf','Festo Valve Terminal Cable'],
+            ['03 Support Documents/IDEM-Saftey Relay.pdf','IDEM Safety Relay'],
+            ['03 Support Documents/MurrElektronic-12 Pin cable.pdf','MurrElektronic 12 Pin Cable'],
+            ['03 Support Documents/MurrElektronic-Distribution Block.pdf','MurrElektronic Distribution Block'],
+            ['03 Support Documents/Phoenix Contact-Safety Relay.pdf','Phoenix Contact Safety Relay'],
           ].map(([file, label]) =>
             `<a href="Work/2_/${file}" target="_blank" class="btn btn-sm">📄 ${label}</a>`
           ).join('')}
@@ -270,6 +283,25 @@ function openProject(id) {
             <figcaption>Enclosure side 2</figcaption>
           </figure>
         </div>
+        <p class="modal-section-label">Remote I/O</p>
+        <div class="modal-gallery">
+          <figure>
+            <img src="Work/3_/Remote_IO1.JPG" alt="Remote I/O view 1" />
+            <figcaption>Remote I/O view 1</figcaption>
+          </figure>
+          <figure>
+            <img src="Work/3_/Remote_IO2.JPG" alt="Remote I/O view 2" />
+            <figcaption>Remote I/O view 2</figcaption>
+          </figure>
+          <figure>
+            <img src="Work/3_/Remote_IO3.JPG" alt="Remote I/O view 3" />
+            <figcaption>Remote I/O view 3</figcaption>
+          </figure>
+          <figure>
+            <img src="Work/3_/Remote_IO_Mount.JPG" alt="Remote I/O mount" />
+            <figcaption>Remote I/O mount</figcaption>
+          </figure>
+        </div>
       `
     },
 
@@ -280,19 +312,20 @@ function openProject(id) {
              Work included topology planning, IT/OT boundary definition, wiring overview drawings in CAD, 
              and PDF deliverable packages for handoff to the customer.`,
       html: () => `
+        <p class="modal-section-label">Architecture Overview (PDF)</p>
+        <div class="modal-pdf-wrap">
+          <iframe src="Work/4_/NetworkArchitecture/combined.pdf#navpanes=0" title="Network Architecture Overview"></iframe>
+        </div>
         <p class="modal-section-label">Network Diagram</p>
         <div class="modal-gallery">
           <img src="Work/4_/NetworkArchitecture/network example.png" alt="Network Architecture Diagram"
                onerror="this.style.display='none'" />
         </div>
-        <p class="modal-section-label">Architecture Overview (PDF)</p>
-        <div class="modal-pdf-wrap">
-          <iframe src="Work/4_/NetworkArchitecture/OVERVIEW.pdf#navpanes=0" title="Network Architecture Overview"></iframe>
-        </div>
         <p class="modal-section-label">Schematic Package</p>
         <div style="display:flex;flex-wrap:wrap;gap:0.6rem;">
           ${[
             ['Cover_Page.pdf','Cover Page'],
+            ['OVERVIEW.pdf','Overview Diagram'],
             ['OVERVIEW_A-B.pdf','Overview A-B'],
             ['OVERVIEW_C-D.pdf','Overview C-D'],
             ['combined.pdf','Full Combined PDF'],
@@ -302,6 +335,7 @@ function openProject(id) {
         </div>
       `
     },
+
 
     /* ── SCHOOL ───────────────────────────────────────── */
 
